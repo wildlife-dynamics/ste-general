@@ -53,7 +53,7 @@ from ecoscope_workflows_ext_ecoscope.tasks.transformation import (
     classify_is_night as classify_is_night,
 )
 from ecoscope_workflows_ext_ste.tasks import (
-    annotate_gdf_dict_with_geom_type as annotate_gdf_dict_with_geom_type,
+    annotate_gdf_dict_with_geom_type as annotate_gdf_dict_with_geom_type_1,
 )
 from ecoscope_workflows_ext_ste.tasks import (
     create_custom_text_layer as create_custom_text_layer,
@@ -829,7 +829,7 @@ def main(params: Params):
             method="call",
         ),
         "annotate_gdf_dict": Node(
-            async_task=annotate_gdf_dict_with_geom_type.validate()
+            async_task=annotate_gdf_dict_with_geom_type_1.validate()
             .set_task_instance_id("annotate_gdf_dict")
             .handle_errors()
             .with_tracing()
@@ -1482,6 +1482,7 @@ def main(params: Params):
             )
             .set_executor("lithops"),
             partial={
+                "data_url": None,
                 "layer_style": {
                     "get_color": "duration_status_colors",
                     "get_width": 2.85,
@@ -1650,6 +1651,7 @@ def main(params: Params):
             )
             .set_executor("lithops"),
             partial={
+                "data_url": None,
                 "layer_style": {
                     "get_fill_color": [
                         85,
@@ -1808,6 +1810,7 @@ def main(params: Params):
             )
             .set_executor("lithops"),
             partial={
+                "data_url": None,
                 "layer_style": {
                     "get_color": "rgba_colors",
                     "get_width": 2.85,
@@ -2102,6 +2105,7 @@ def main(params: Params):
             )
             .set_executor("lithops"),
             partial={
+                "data_url": None,
                 "layer_style": {
                     "filled": True,
                     "stroked": True,
@@ -2259,6 +2263,7 @@ def main(params: Params):
             )
             .set_executor("lithops"),
             partial={
+                "data_url": None,
                 "layer_style": {
                     "filled": True,
                     "stroked": True,
@@ -2532,6 +2537,7 @@ def main(params: Params):
             )
             .set_executor("lithops"),
             partial={
+                "data_url": None,
                 "layer_style": {
                     "filled": True,
                     "stroked": True,
@@ -2884,6 +2890,7 @@ def main(params: Params):
             )
             .set_executor("lithops"),
             partial={
+                "data_url": None,
                 "layer_style": {
                     "filled": True,
                     "stroked": False,
@@ -3214,6 +3221,7 @@ def main(params: Params):
             )
             .set_executor("lithops"),
             partial={
+                "data_url": None,
                 "layer_style": {
                     "filled": True,
                     "stroked": False,
@@ -3439,6 +3447,7 @@ def main(params: Params):
             )
             .set_executor("lithops"),
             partial={
+                "data_url": None,
                 "layer_style": {
                     "filled": True,
                     "stroked": True,
@@ -3641,6 +3650,7 @@ def main(params: Params):
             )
             .set_executor("lithops"),
             partial={
+                "data_url": None,
                 "layer_style": {
                     "filled": True,
                     "stroked": True,
@@ -3777,7 +3787,6 @@ def main(params: Params):
             partial={
                 "trajs_gdf": DependsOn("add_season_labels"),
                 "pa_gdf": DependsOn("filter_ldx_cols"),
-                "column": "type",
             }
             | (params_dict.get("protected_areas") or {}),
             method="call",
@@ -3899,6 +3908,7 @@ def main(params: Params):
             )
             .set_executor("lithops"),
             partial={
+                "data_url": None,
                 "layer_style": {
                     "filled": True,
                     "stroked": True,
@@ -4136,6 +4146,7 @@ def main(params: Params):
             )
             .set_executor("lithops"),
             partial={
+                "data_url": None,
                 "layer_style": {
                     "filled": True,
                     "stroked": True,
@@ -4459,6 +4470,7 @@ def main(params: Params):
             )
             .set_executor("lithops"),
             partial={
+                "data_url": None,
                 "layer_style": {
                     "filled": True,
                     "stroked": True,

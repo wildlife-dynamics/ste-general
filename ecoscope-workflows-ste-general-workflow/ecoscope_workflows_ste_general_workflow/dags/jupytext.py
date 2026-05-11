@@ -87,7 +87,7 @@ from ecoscope_workflows_ext_ecoscope.tasks.transformation import (
     classify_is_night as classify_is_night,
 )
 from ecoscope_workflows_ext_ste.tasks import (
-    annotate_gdf_dict_with_geom_type as annotate_gdf_dict_with_geom_type,
+    annotate_gdf_dict_with_geom_type as annotate_gdf_dict_with_geom_type_1,
 )
 from ecoscope_workflows_ext_ste.tasks import (
     assign_season_colors as assign_season_colors,
@@ -675,7 +675,7 @@ annotate_gdf_dict_params = dict()
 
 
 annotate_gdf_dict = (
-    annotate_gdf_dict_with_geom_type.set_task_instance_id("annotate_gdf_dict")
+    annotate_gdf_dict_with_geom_type_1.set_task_instance_id("annotate_gdf_dict")
     .handle_errors()
     .with_tracing()
     .skipif(
@@ -1554,6 +1554,7 @@ generate_track_layers = (
         unpack_depth=1,
     )
     .partial(
+        data_url=None,
         layer_style={
             "get_color": "duration_status_colors",
             "get_width": 2.85,
@@ -1790,6 +1791,7 @@ generate_collaring_layers = (
         unpack_depth=1,
     )
     .partial(
+        data_url=None,
         layer_style={
             "get_fill_color": [85, 107, 47],
             "get_line_color": [0, 0, 0, 200],
@@ -2000,6 +2002,7 @@ generate_strack_layers = (
         unpack_depth=1,
     )
     .partial(
+        data_url=None,
         layer_style={
             "get_color": "rgba_colors",
             "get_width": 2.85,
@@ -2420,6 +2423,7 @@ generate_home_range_layers = (
         unpack_depth=1,
     )
     .partial(
+        data_url=None,
         layer_style={
             "filled": True,
             "stroked": True,
@@ -2643,6 +2647,7 @@ custom_home_range_layers = (
         unpack_depth=1,
     )
     .partial(
+        data_url=None,
         layer_style={
             "filled": True,
             "stroked": True,
@@ -3001,6 +3006,7 @@ generate_recursion_layers = (
         unpack_depth=1,
     )
     .partial(
+        data_url=None,
         layer_style={
             "filled": True,
             "stroked": True,
@@ -3501,6 +3507,7 @@ create_dry_speed_raster_layer = (
         unpack_depth=1,
     )
     .partial(
+        data_url=None,
         layer_style={
             "filled": True,
             "stroked": False,
@@ -3965,6 +3972,7 @@ create_wet_speed_raster_layer = (
         unpack_depth=1,
     )
     .partial(
+        data_url=None,
         layer_style={
             "filled": True,
             "stroked": False,
@@ -4287,6 +4295,7 @@ generate_dn_layers = (
         unpack_depth=1,
     )
     .partial(
+        data_url=None,
         layer_style={
             "filled": True,
             "stroked": True,
@@ -4576,6 +4585,7 @@ generate_night_layers = (
         unpack_depth=1,
     )
     .partial(
+        data_url=None,
         layer_style={
             "filled": True,
             "stroked": True,
@@ -4764,10 +4774,7 @@ protected_areas = (
         unpack_depth=1,
     )
     .partial(
-        trajs_gdf=add_season_labels,
-        pa_gdf=filter_ldx_cols,
-        column="type",
-        **protected_areas_params,
+        trajs_gdf=add_season_labels, pa_gdf=filter_ldx_cols, **protected_areas_params
     )
     .call()
 )
@@ -4938,6 +4945,7 @@ generate_pa_layers = (
         unpack_depth=1,
     )
     .partial(
+        data_url=None,
         layer_style={
             "filled": True,
             "stroked": True,
@@ -5269,6 +5277,7 @@ generate_unprotected_layers = (
         unpack_depth=1,
     )
     .partial(
+        data_url=None,
         layer_style={
             "filled": True,
             "stroked": True,
@@ -5700,6 +5709,7 @@ generate_season_layers = (
         unpack_depth=1,
     )
     .partial(
+        data_url=None,
         layer_style={
             "filled": True,
             "stroked": True,

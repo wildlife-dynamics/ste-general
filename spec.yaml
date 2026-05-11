@@ -9,7 +9,7 @@ requirements:
     channel: https://repo.prefix.dev/ecoscope-workflows/
 
   - name: ecoscope-workflows-ext-custom
-    version: "0.0.39.*"
+    version: "0.0.43.*"
     channel: https://repo.prefix.dev/ecoscope-workflows-custom/
   
   - name: ecoscope-workflows-ext-big-life
@@ -17,7 +17,7 @@ requirements:
     channel: https://repo.prefix.dev/ecoscope-workflows-custom/
 
   - name: ecoscope-workflows-ext-ste
-    version: "0.0.18.*"
+    version: "0.0.21.*"
     channel: https://repo.prefix.dev/ecoscope-workflows-custom/
     
 rjsf-overrides:
@@ -180,14 +180,14 @@ workflow:
   
   - name: Split ldx gdf by type column 
     id: split_ldx_by_type 
-    task: split_gdf_by_column
+    task: ecoscope_workflows_ext_ste.tasks.split_gdf_by_column
     partial: 
       gdf: ${{ workflow.filter_ldx_cols.return }}
       column: type 
   
   - name: Annotate gdf dict with geom type 
     id: annotate_gdf_dict 
-    task: annotate_gdf_dict_with_geom_type 
+    task: ecoscope_workflows_ext_ste.tasks.annotate_gdf_dict_with_geom_type
     partial: 
       gdf_dict: ${{ workflow.split_ldx_by_type.return }}
 
@@ -475,6 +475,7 @@ workflow:
     id: generate_track_layers
     task: create_path_layer
     partial: 
+      data_url: null
       layer_style:
         get_color: duration_status_colors
         get_width: 2.85
@@ -570,6 +571,7 @@ workflow:
         - any_is_empty_df
         - any_dependency_skipped
     partial:
+      data_url: null
       layer_style:
         get_fill_color: [85, 107, 47]
         get_line_color: [0, 0, 0, 200]
@@ -636,6 +638,7 @@ workflow:
     id: generate_strack_layers
     task: create_path_layer
     partial: 
+      data_url: null
       layer_style:
         get_color: rgba_colors
         get_width: 2.85
@@ -769,6 +772,7 @@ workflow:
     id: generate_home_range_layers 
     task: create_geojson_layer
     partial: 
+      data_url: null
       layer_style: 
         filled: true 
         stroked: true 
@@ -847,6 +851,7 @@ workflow:
     id: custom_home_range_layers 
     task: create_geojson_layer
     partial: 
+      data_url: null
       layer_style: 
         filled: true 
         stroked: true 
@@ -974,6 +979,7 @@ workflow:
     id: generate_recursion_layers 
     task: create_geojson_layer
     partial: 
+      data_url: null
       layer_style: 
         filled: true 
         stroked: true 
@@ -1139,6 +1145,7 @@ workflow:
     id: create_dry_speed_raster_layer 
     task: create_geojson_layer 
     partial: 
+      data_url: null
       layer_style: 
         filled: true 
         stroked: false 
@@ -1295,6 +1302,7 @@ workflow:
     id: create_wet_speed_raster_layer 
     task: create_geojson_layer 
     partial: 
+      data_url: null
       layer_style: 
         filled: true 
         stroked: false 
@@ -1400,6 +1408,7 @@ workflow:
     id: generate_dn_layers 
     task: create_geojson_layer
     partial: 
+      data_url: null
       layer_style: 
         filled: true 
         stroked: true 
@@ -1495,6 +1504,7 @@ workflow:
     id: generate_night_layers 
     task: create_geojson_layer 
     partial: 
+      data_url: null
       layer_style: 
         filled: true 
         stroked: true 
@@ -1564,7 +1574,6 @@ workflow:
     partial: 
       trajs_gdf: ${{ workflow.add_season_labels.return }}
       pa_gdf: ${{ workflow.filter_ldx_cols.return }}
-      column: type
 
   - name: Filter protected areas 
     id: filter_pa
@@ -1619,6 +1628,7 @@ workflow:
     id: generate_pa_layers 
     task: create_geojson_layer
     partial: 
+      data_url: null
       layer_style: 
         filled: true 
         stroked: true 
@@ -1734,6 +1744,7 @@ workflow:
     id: generate_unprotected_layers 
     task: create_geojson_layer
     partial: 
+      data_url: null
       layer_style: 
         filled: true 
         stroked: true 
@@ -1876,6 +1887,7 @@ workflow:
     id: generate_season_layers 
     task: create_geojson_layer
     partial: 
+      data_url: null
       layer_style: 
         filled: true 
         stroked: true 
