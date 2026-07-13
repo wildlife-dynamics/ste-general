@@ -47,7 +47,7 @@ Before running the workflow, ensure you have:
 
 - Access to an **EarthRanger** instance containing the subject group to analyse
 - Access to a **Google Earth Engine** service account (for NDVI-based seasonal window detection and satellite base layers)
-- The **landDx geodatabase** (`.gpkg`) — the standard STE Dropbox URL is pre-filled; supply a custom URL or local path if needed
+- No separate landDx file is needed to get started — the workflow downloads the standard LandDx protected-areas layer automatically for the default **Map Overlay** option (see Step 8)
 
 ---
 
@@ -152,14 +152,15 @@ All subject tracks, home ranges, and activity maps are computed within this wind
 
 Scroll down to configure the next three sections.
 
-**Set previous period range**
+**Previous Period**
 
-This period drives the "Previous tracks" layer on the Movement Tracks Map, enabling direct before-and-after comparison alongside the current period tracks.
+This period drives the "Previous tracks" layer on the Movement Tracks Map, enabling direct before-and-after comparison alongside the current period tracks. Every mode computes a comparison period that ends on your time range's Start Date, then works backward to determine its own Start Date.
 
-| Field | Default | Description |
-|-------|---------|-------------|
-| Option | Choose which period to select | Whether to use a predefined period type or specify a custom date range |
-| PreviousPeriodType | `Same as current period` | Predefined period (e.g. Same as current, Previous month, Previous year) |
+| Offset Mode | Default | Description |
+|-------------|---------|-------------|
+| **Preset** | `1 month back` | A common lookback: `Same as current period`, `1 month back`, `3 months back`, `6 months back`, or `1 year back` |
+| **Custom** | Years `0`, Months `1`, Weeks `0`, Days `0` | Manually set how far back the comparison period's Start Date should be |
+| **Calendar** | — | Pick an exact Start Date for the comparison period |
 
 **Connect to earth ranger**
 
@@ -173,38 +174,29 @@ Select the Google Earth Engine data source configured in Step 4 from the **Data 
 
 ---
 
-### Step 8 — Subject Group and Load landDx Database
+### Step 8 — Subject Group and Map Overlay
 
 **Subject Group**
 
 | Field | Default | Description |
 |-------|---------|-------------|
-| Subject Group Name | `Elephants` | Name of the subject group to pull from EarthRanger |
+| Subject Group Name | `Elephants` | Name of the subject group to pull from EarthRanger (case-sensitive) |
 
-**Load landDx database**
+**Map Overlay**
 
-The landDx geodatabase supplies the protected area and conservancy boundary layers displayed on all maps. The workflow filters the database to three area types and styles them as follows:
+Choose the overlay layer displayed on every map. This overlay is also used to calculate which GPS fixes fall inside vs. outside protected land, which drives the Protected/Unprotected Home Range maps and the Protection Status Bar Chart. Only protected-area style layers are supported for now.
 
-| Area Type | Map colour |
-|-----------|-----------|
-| Community Conservancy | `#a6b697` (sage green) |
-| National Reserve | `#88a78e` (muted green) |
-| National Park | `#115631` (dark forest green) |
-
-Choose how to supply the file:
-
-| Input Method | When to use | What to provide |
-|-------------|-------------|----------------|
-| **Download from URL** | File is hosted remotely (e.g. Dropbox) | Paste the direct download URL into the **URL** field |
-| **Local path** | File is already on the machine running the workflow | Enter the absolute file path to the `.gpkg` file |
-
-> The standard STE landDx Dropbox URL is pre-filled. Leave it unchanged unless you have a custom or updated version of the file.
+| Option | When to use | What to provide |
+|--------|-------------|----------------|
+| **LandDx (Default Protected Areas)** — default | Standard use case | Nothing — the workflow automatically downloads and styles the standard LandDx GeoPackage. It is filtered to three area types and coloured as follows: Community Conservancy `#a6b697` (sage green), National Reserve `#88a78e` (muted green), National Park `#115631` (dark forest green) |
+| **EarthRanger Spatial Feature** | Your protected areas are maintained as EarthRanger spatial features | One or more layers, each specifying what to load (featureset / type / id) and optional style overrides |
+| **Custom Local File** | You have a local GeoJSON / GeoPackage / GeoParquet file | One or more local files (or split groups within a file), each becoming its own styled layer |
 
 ![Subject Group and Load landDx Database](data/screenshots/subject_group_loadldx.png)
 
 ---
 
-### Step 9 — Trajectory Segment Filter, Retrieve All Events, and Report Logo
+### Step 9 — Trajectory Segment Filter, Map Zoom & Extent, Retrieve All Events, and Report Logo
 
 **Trajectory Segment Filter**
 
@@ -212,30 +204,50 @@ Applied to both the current and previous period trajectories before any analysis
 
 | Field | Default | Description |
 |-------|---------|-------------|
-| Min Length Meters | `0.001` | Discard segments shorter than this distance |
-| Max Length Meters | `5000` | Discard segments longer than this distance |
-| Min Time Secs | `1` | Discard segments shorter than this duration |
-| Max Time Secs | `21600` | Discard segments longer than this duration (6 hours) |
-| Min Speed Knots | `0.01` | Discard segments below this average speed |
-| Max Speed Knots | `9` | Discard segments above this average speed |
+| Minimum Segment Length (m) | `0.001` | Discard segments shorter than this distance |
+| Maximum Segment Length (m) | `5000` | Discard segments longer than this distance |
+| Minimum Segment Duration (s) | `1` | Discard segments shorter than this duration |
+| Maximum Segment Duration (s) | `21600` | Discard segments longer than this duration (6 hours) |
+| Minimum Speed (km/h) | `0.01` | Discard segments where average speed falls below this value |
+| Maximum Speed (km/h) | `9` | Discard segments where average speed exceeds this value (a sensible ceiling for elephants) |
+
+**Map Zoom & Extent**
+
+Calculates the geographic extent of the movement tracks and determines an appropriate zoom level and center point, ensuring all tracks are visible and well-framed.
+
+| Field | Default | Description |
+|-------|---------|-------------|
+| Expansion Factor | `1.5` | Factor to expand the bounding box around the tracks (e.g. `1.2` = 20% larger) |
 
 **Retrieve all events**
 
-| Field | Description |
-|-------|-------------|
-| Event Types | Filter to specific EarthRanger event types (click **Add** to add entries; leave empty to include all event types) |
+| Field | Default | Description |
+|-------|---------|-------------|
+| Event Types | *(empty)* | Filter to specific EarthRanger event types (click **Add** to add entries; leave empty to include all event types) |
+| Force Point Geometry | `true` | If enabled, polygon/multipolygon event geometries are reduced to their centroid; disable to preserve native geometry types |
 
 **Report logo**
 
-Provide the logo image to appear on the report cover page.
+Optional — provide the logo image to appear on the report cover page. Leave blank to omit a logo.
 
 | Input Method | What to provide |
 |-------------|----------------|
 | **Download from URL** | Paste the direct download URL into the **URL** field |
+| **Use local file** | Enter the absolute path to the logo file on the machine running the workflow |
 
 ![Trajectory Segment Filter and Retrieve All Events](data/screenshots/trajsegmentfilter_event_type.png)
 
 ![Report Logo](data/screenshots/report_logo.png)
+
+---
+
+### Step 10 — Raster Maps
+
+Configure how the mean speed raster is generated from movement trajectories.
+
+| Field | Default | Description |
+|-------|---------|-------------|
+| Step Length / Grid Size (m) | `2000` | Pixel size (in meters) used to generate the Recursion Events raster and the dry/wet season Mean Speed rasters. Smaller values are more detailed but slower to generate and produce larger files. |
 
 ---
 
@@ -246,7 +258,7 @@ Once all parameters are configured, click **Submit**. The runner will:
 1. Pull subject GPS observations (current and previous period) from EarthRanger.
 2. Process relocations and apply the trajectory segment filter to both periods.
 3. Query Google Earth Engine to determine NDVI-derived wet and dry seasonal windows; label each trajectory segment accordingly.
-4. Load and style the landDx geodatabase boundary layers.
+4. Load and style the selected Map Overlay layer (LandDx protected areas by default).
 5. Generate the Movement Tracks Map (current + previous overlay) and the Subject Tracks Map.
 6. Fetch EarthRanger events and generate the Elephant Sightings map.
 7. Compute Elliptical Time Density home ranges: overall, filtered 99th percentile, protected/unprotected split, and per-subject seasonal.
@@ -268,9 +280,9 @@ All outputs are written to `$ECOSCOPE_WORKFLOWS_RESULTS/`:
 | `previous_period_relocations.geoparquet` | Previous period GPS fix locations |
 | `trajectories.geoparquet` | Current period trajectory segments with season labels |
 | `previous_period_trajectories.geoparquet` | Previous period trajectory segments |
-| `home_range_etd.geoparquet` | Overall ETD home range polygons (50–99.9th percentiles) |
-| `protected_areas_home_range_etd.geoparquet` | ETD home range for fixes inside protected areas |
-| `unprotected_areas_home_range_etd.geoparquet` | ETD home range for fixes outside protected areas |
+| `homerange_etd.geoparquet` | Overall ETD home range polygons (50–99.9th percentiles) |
+| `homerange_protected_etd.geoparquet` | ETD home range for fixes inside protected areas |
+| `homerange_unprotected_etd.geoparquet` | ETD home range for fixes outside protected areas |
 | `<subject>_seasonal_etd.geoparquet` | Seasonal ETD per subject |
 | `seasonal_windows.csv` | NDVI-derived wet/dry season date ranges |
 | `weighted_raster.*` | Recursion events ecograph raster file |
@@ -303,5 +315,4 @@ All outputs are written to `$ECOSCOPE_WORKFLOWS_RESULTS/`:
 | `night_fixes.png` | Screenshot of night fixes map (2× resolution) |
 | `protection_status_bar.png` | Screenshot of protection status bar chart (2× resolution) |
 | `general_cover_page.docx` | Rendered report cover page (logo, subject count, report period) |
-| `general.docx` | General per-subject report section |
-| Merged report `.docx` | Final combined Word report |
+| `overall_report.docx` | Final combined Word report (cover page + general per-subject section) |
