@@ -5,26 +5,26 @@
 
 ```yaml
 # fingerprint:
-artifacts_sha256_basic: 335fc5251931883915c54bbc1e2fc38631286fad47a313fab29e3a1014e6793f
-artifacts_sha256_strict: 005d30a117bc06e42025842e8ba218712eb317530e66bd819b8a8bb947cd0053
+artifacts_sha256_basic: 76e8c7ba9018fa746a80c8075c41f7b5e004335571108f130be126993abc5f08
+artifacts_sha256_strict: 53cefafd03b97a3b22e173b41889e83c0824c3784b00ff0512a80c123ff16dfe
 installed_requirements:
 - channel: https://repo.prefix.dev/ecoscope-workflows/
-  name: ecoscope-workflows-core
-  version: {version: ==0.22.17}
-- channel: https://repo.prefix.dev/ecoscope-workflows/
-  name: ecoscope-workflows-ext-ecoscope
-  version: {version: ==0.22.17}
+  name: ecoscope-platform
+  version: {version: ==2.15.1}
 - channel: https://repo.prefix.dev/ecoscope-workflows-custom/
   name: ecoscope-workflows-ext-custom
-  version: {version: ==0.0.43}
-- channel: https://repo.prefix.dev/ecoscope-workflows-custom/
-  name: ecoscope-workflows-ext-big-life
-  version: {version: ==0.0.8}
+  version: {version: ==0.1.0rc14}
 - channel: https://repo.prefix.dev/ecoscope-workflows-custom/
   name: ecoscope-workflows-ext-ste
-  version: {version: ==0.0.21}
-params_sha256: 07250e0dac5da6caaf15737bcbe4fc87d9b28a7f346c1c24d971676b4a6e92c2
-spec_sha256: 6f49e52c1afe7a416d976f939fa5021dd4fbbd7e50cde981651bad8b980a42e8
+  version: {version: ==0.0.0rc1}
+- channel: conda-forge
+  name: pydeck
+  version: {version: ==0.9.2}
+- channel: conda-forge
+  name: opentelemetry-sdk
+  version: {version: ==1.43.0}
+params_sha256: ea873144b3ac48a308ab21e7c11d207aa3fc76beb4ecf4f2e0e5d0e3a226825b
+spec_sha256: 2c1ed1b89129ed0e68f12c332fbf0d6b069e167b32fbe3a2efb2228eb92b795a
 
 ```
 

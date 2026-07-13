@@ -1,21 +1,21 @@
-name:  # Title Case, e.g. "My Ecoscope Workflow Template"
+name: STE General Workflow
 
 # at least one author is required
 author:
-  - name: ""
-    organization: ""
-    email: ""
+  - name: Tevin Temu
+    organization: Wildlife Dynamics
+    email: tevin@wildlifedynamics.com
 
-description: # A short description
-
-# todo: add example
-theory: "" # optional
+description: Generates a comprehensive elephant movement analysis report for Save the Elephants, combining GPS observations from EarthRanger with Google Earth Engine satellite imagery into home range, habitat use, activity, and event maps, charts, and reports.
 
 # todo: add example
-output_comment: "" # optional
+theory: "Home ranges are estimated using Elliptical Time Density (ETD) at multiple percentiles, split by protection status (inside/outside protected land) and by season (wet/dry, derived from NDVI). Habitat use is characterised via ecograph recursion networks and mean-speed rasters, while diel activity is assessed by classifying grid cells as night- or day-dominant based on the proportion of nocturnal fixes." # optional
+
+# todo: add example
+output_comment: "Outputs a full suite of movement, home range, habitat use, activity, and event maps, plus a protection-status bar chart and a seasonal windows CSV, bundled into a Word (.docx) report and an interactive dashboard." # optional
 
 # optional
 # example
-# citation: 
+# citation:
 #   - Wu, Y. et al. (2025). "Monitoring elephant spatial patterns with Ecoscope workflows."
-citation: [] 
+citation: []
