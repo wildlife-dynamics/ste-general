@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>STE General Workflow</title>
+  <link rel="stylesheet" href="assets/style.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="bar">
+      <a class="brand" href="index.html">STE General Workflow</a>
+      <nav>
+        <a href="index.html" class="active">Overview</a>
+        <a href="user-guide.html">User Guide</a>
+        <a href="technical-guide.html">Technical Guide</a>
+        <a href="troubleshooting.html">Troubleshooting</a>
+        <a href="https://github.com/wildlife-dynamics/ste-general">GitHub</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <h1>STE General Workflow</h1>
+    <p class="lede">Generates a comprehensive elephant movement analysis report for Save the Elephants, combining GPS observations from EarthRanger with Google Earth Engine satellite imagery into home range, habitat use, activity, and event maps, charts, and reports.</p>
+
+    <div class="card-grid">
+      <a class="card" href="user-guide.html">
+        <h3>User Guide</h3>
+        <p>Step-by-step instructions for loading, configuring, and running the workflow.</p>
+      </a>
+      <a class="card" href="technical-guide.html">
+        <h3>Technical Guide</h3>
+        <p>Deeper look at the workflow's internals — pipeline stages, calculation methodology, and outputs.</p>
+      </a>
+      <a class="card" href="troubleshooting.html">
+        <h3>Troubleshooting</h3>
+        <p>Common errors you may hit while configuring or running the workflow, and how to resolve them.</p>
+      </a>
+    </div>
+
+    <h2>What it produces</h2>
+    <p>The workflow processes GPS observations for a chosen subject group and produces a full suite of spatial, temporal, and ecological analyses:</p>
+    <table>
+      <thead><tr><th>Category</th><th>Outputs</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Movement maps</strong></td><td>Movement Tracks Map (current + previous period overlay), Subject Tracks Map (coloured per individual)</td></tr>
+        <tr><td><strong>Home range maps</strong></td><td>Overall Home Range (ETD 50–99.9%), Filtered Home Range (99th percentile), Protected Areas Home Range, Unprotected Areas Home Range, Seasonal Home Range (per subject)</td></tr>
+        <tr><td><strong>Habitat use maps</strong></td><td>Recursion Events Raster, Dry Season Mean Speed Raster, Wet Season Mean Speed Raster</td></tr>
+        <tr><td><strong>Activity maps</strong></td><td>Time of Day Dominance Map, Night Fixes Map</td></tr>
+        <tr><td><strong>Event maps</strong></td><td>Elephant Sightings / Collaring Events Map</td></tr>
+        <tr><td><strong>Charts &amp; tables</strong></td><td>Protection Status Bar Chart, Seasonal Windows CSV</td></tr>
+        <tr><td><strong>Reports</strong></td><td>Word document report (cover page + general section), interactive dashboard</td></tr>
+      </tbody>
+    </table>
+
+    <h2>Requirements</h2>
+    <ul>
+      <li>Access to an <strong>EarthRanger</strong> instance containing the subject group to analyse</li>
+      <li>Access to a <strong>Google Earth Engine</strong> service account (for NDVI-based seasonal window detection and satellite base layers)</li>
+      <li>No separate landDx file is needed to get started &mdash; the workflow downloads the standard LandDx protected-areas layer automatically for the default <strong>Map Overlay</strong> option</li>
+    </ul>
+
+    <h2>Get started</h2>
+    <p>New to the workflow? Start with the <a href="user-guide.html">User Guide</a> for a walkthrough of loading the template, configuring connections, and setting parameters. Running into an error? Check <a href="troubleshooting.html">Troubleshooting</a> first.</p>
+  </main>
+
+  <footer class="site-footer">
+    <p>STE General Workflow &middot; <a href="https://github.com/wildlife-dynamics/ste-general">wildlife-dynamics/ste-general</a> on GitHub</p>
+  </footer>
+</body>
+</html>

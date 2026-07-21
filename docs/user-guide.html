@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>User Guide — STE General Workflow</title>
+  <link rel="stylesheet" href="assets/style.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="bar">
+      <a class="brand" href="index.html">STE General Workflow</a>
+      <nav>
+        <a href="index.html">Overview</a>
+        <a href="user-guide.html" class="active">User Guide</a>
+        <a href="technical-guide.html">Technical Guide</a>
+        <a href="troubleshooting.html">Troubleshooting</a>
+        <a href="https://github.com/wildlife-dynamics/ste-general">GitHub</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <h1>STE General Workflow &mdash; User Guide</h1>
+    <p class="lede">This guide walks you through loading, configuring, and running the STE General Workflow, which generates a comprehensive elephant movement analysis report for Save the Elephants sourced from EarthRanger and Google Earth Engine.</p>
+
+    <h2>What it produces</h2>
+    <p>The workflow processes GPS observations for a chosen subject group and produces a full suite of spatial, temporal, and ecological analyses:</p>
+    <ul>
+      <li><strong>Movement maps</strong> &mdash; Movement Tracks Map (current + previous period overlay), Subject Tracks Map (coloured per individual subject)</li>
+      <li><strong>Home range maps</strong> &mdash; Overall Home Range (ETD 50&ndash;99.9%), Filtered Home Range (99th percentile), Protected Areas Home Range, Unprotected Areas Home Range, Seasonal Home Range (per subject)</li>
+      <li><strong>Habitat use maps</strong> &mdash; Recursion Events Raster, Dry Season Mean Speed Raster, Wet Season Mean Speed Raster</li>
+      <li><strong>Activity maps</strong> &mdash; Time of Day Dominance Map, Night Fixes Map</li>
+      <li><strong>Event maps</strong> &mdash; Elephant Sightings / Collaring Events Map</li>
+      <li><strong>Charts &amp; tables</strong> &mdash; Protection Status Bar Chart, Seasonal Windows CSV</li>
+      <li><strong>Reports</strong> &mdash; Word document report (cover page + general section), interactive dashboard</li>
+    </ul>
+
+    <h2>Requirements</h2>
+    <ul>
+      <li>Access to an <strong>EarthRanger</strong> instance containing the subject group to analyse</li>
+      <li>Access to a <strong>Google Earth Engine</strong> service account (for NDVI-based seasonal window detection and satellite base layers)</li>
+      <li>No separate landDx file is needed to get started &mdash; the workflow downloads the standard LandDx protected-areas layer automatically for the default <strong>Map Overlay</strong> option</li>
+    </ul>
+
+    <h2 id="load">1. Load the Workflow</h2>
+    <p>In the workflow runner, go to <strong>Workflow Templates</strong> and click <strong>Add Workflow Template</strong>. Paste this repository's URL into the <strong>Github Link</strong> field, then click <strong>Add Template</strong>:</p>
+    <pre><code>https://github.com/wildlife-dynamics/ste-general.git</code></pre>
+    <p>Once added, it appears in the <strong>Workflow Templates</strong> list as <strong>ste_general</strong>. Click it to open the workflow configuration form (the card may show <strong>Initializing&hellip;</strong> briefly while the environment is set up).</p>
+
+    <h2 id="configure">2. Configure the Workflow</h2>
+    <p>You'll be prompted to fill in the following parameters before running.</p>
+
+    <h3 id="connections">Data Source Connections</h3>
+    <p>Navigate to <strong>Data Sources</strong> and click <strong>Connect</strong>. A dialog will prompt you to <strong>Select Data Source Type</strong>. This workflow requires two connections:</p>
+    <table>
+      <thead><tr><th>Data Source Type</th><th>Purpose</th></tr></thead>
+      <tbody>
+        <tr><td><strong>EarthRanger</strong></td><td>Pull subject observations and collaring events</td></tr>
+        <tr><td><strong>Google Earth Engine</strong></td><td>Fetch satellite imagery and compute NDVI-based seasonal windows</td></tr>
+      </tbody>
+    </table>
+    <p><strong>EarthRanger connection</strong> &mdash; select <strong>EarthRanger</strong>, then fill in:</p>
+    <ul>
+      <li><strong>Data Source Name</strong> &mdash; a label to identify this connection</li>
+      <li><strong>EarthRanger URL</strong> &mdash; your instance URL (e.g. <code>your-site.pamdas.org</code>)</li>
+      <li><strong>EarthRanger Username</strong> and <strong>EarthRanger Password</strong></li>
+    </ul>
+    <p>Credentials are not validated at setup time &mdash; any authentication errors will appear when the workflow runs.</p>
+    <p><strong>Google Earth Engine connection</strong> &mdash; select <strong>Google Earth Engine</strong>, then fill in:</p>
+    <ul>
+      <li><strong>Data Source Name</strong> &mdash; a label to identify this connection</li>
+      <li><strong>Private Key</strong> &mdash; click <strong>Browse</strong> to select your GEE service account private key file (JSON format)</li>
+    </ul>
+    <p>To generate a private key, follow the instructions in the <a href="https://developers.google.com/earth-engine/guides/service_account">Setup Guide</a>. The key is stored encrypted and used only to authenticate with Google Earth Engine.</p>
+    <p>Once both connections exist, select them from the <strong>Connect to earth ranger</strong> and <strong>Connect to earth engine</strong> dropdowns in the workflow form.</p>
+
+    <h3 id="workflow-details">Workflow Details</h3>
+    <table>
+      <thead><tr><th>Field</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td>Workflow Name</td><td>A short name to identify this run</td></tr>
+        <tr><td>Workflow Description</td><td>Optional notes (e.g. date range or subject group)</td></tr>
+      </tbody>
+    </table>
+
+    <h3 id="basemap">Basemap Layers</h3>
+    <p>The <strong>Configure basemap layers</strong> step sets the two stacked background tile layers shared by all maps. Pre-filled with sensible defaults, but the URL, opacity, and max zoom of each layer are editable.</p>
+    <table>
+      <thead><tr><th>Layer</th><th>Default Opacity</th><th>Max Zoom</th></tr></thead>
+      <tbody>
+        <tr><td>ESRI World Hillshade</td><td><code>0.995</code></td><td><code>20</code></td></tr>
+        <tr><td>ESRI World Boundaries &amp; Places</td><td><code>0.35</code></td><td><code>20</code></td></tr>
+      </tbody>
+    </table>
+
+    <h3 id="time-range">Analysis Time Range</h3>
+    <table>
+      <thead><tr><th>Field</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td>Timezone</td><td>Select the local timezone (e.g. <code>Africa/Nairobi UTC+03:00</code>)</td></tr>
+        <tr><td>Since</td><td>Start date and time of the analysis period</td></tr>
+        <tr><td>Until</td><td>End date and time of the analysis period</td></tr>
+      </tbody>
+    </table>
+    <p>All subject tracks, home ranges, and activity maps are computed within this window.</p>
+
+    <h3 id="previous-period">Previous Period Range</h3>
+    <p>This period drives the "Previous tracks" layer on the Movement Tracks Map, enabling direct before-and-after comparison alongside the current period tracks. Every mode computes a comparison period that ends on your time range's Start Date, then works backward to determine its own Start Date.</p>
+    <table>
+      <thead><tr><th>Offset Mode</th><th>Default</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Preset</strong></td><td><code>1 month back</code></td><td>A common lookback: <code>Same as current period</code>, <code>1 month back</code>, <code>3 months back</code>, <code>6 months back</code>, or <code>1 year back</code></td></tr>
+        <tr><td><strong>Calendar</strong></td><td>&mdash;</td><td>Pick an exact Start Date for the comparison period</td></tr>
+        <tr><td><strong>Custom</strong></td><td>Years <code>0</code>, Months <code>1</code>, Weeks <code>0</code>, Days <code>0</code></td><td>Manually set how far back the comparison period's Start Date should be</td></tr>
+      </tbody>
+    </table>
+
+    <h3 id="subject-group">Subject Group</h3>
+    <table>
+      <thead><tr><th>Field</th><th>Default</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td>Subject Group Name</td><td><code>Elephants</code></td><td>Name of the subject group to pull from EarthRanger (case-sensitive)</td></tr>
+      </tbody>
+    </table>
+
+    <h3 id="map-overlay">Map Overlay</h3>
+    <p>Choose the overlay layer displayed on every map. This overlay is also used to calculate which GPS fixes fall inside vs. outside protected land, which drives the Protected/Unprotected Home Range maps and the Protection Status Bar Chart. Only protected-area style layers are supported for now.</p>
+    <table>
+      <thead><tr><th>Option</th><th>When to use</th><th>What to provide</th></tr></thead>
+      <tbody>
+        <tr><td><strong>LandDx (Default Protected Areas)</strong> &mdash; default</td><td>Standard use case</td><td>Nothing &mdash; the workflow automatically downloads and styles the standard LandDx GeoPackage. It is filtered to three area types and coloured as follows: Community Conservancy <code>#a6b697</code> (sage green), National Reserve <code>#88a78e</code> (muted green), National Park <code>#115631</code> (dark forest green)</td></tr>
+        <tr><td><strong>EarthRanger Spatial Feature</strong></td><td>Your protected areas are maintained as EarthRanger spatial features</td><td>One or more layers, each specifying what to load (featureset / type / id) and optional style overrides</td></tr>
+        <tr><td><strong>Custom Local File</strong></td><td>You have a local GeoJSON / GeoPackage / GeoParquet file</td><td>One or more local files (or split groups within a file), each becoming its own styled layer</td></tr>
+      </tbody>
+    </table>
+
+    <h3 id="trajectory-filter">Trajectory Segment Filter</h3>
+    <p>Applied to both the current and previous period trajectories before any analysis. Removes GPS noise and biologically unrealistic movement segments.</p>
+    <table>
+      <thead><tr><th>Field</th><th>Default</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td>Minimum Segment Length (m)</td><td><code>0.001</code></td><td>Discard segments shorter than this distance</td></tr>
+        <tr><td>Maximum Segment Length (m)</td><td><code>5000</code></td><td>Discard segments longer than this distance</td></tr>
+        <tr><td>Minimum Segment Duration (s)</td><td><code>1</code></td><td>Discard segments shorter than this duration</td></tr>
+        <tr><td>Maximum Segment Duration (s)</td><td><code>21600</code></td><td>Discard segments longer than this duration (6 hours)</td></tr>
+        <tr><td>Minimum Speed (km/h)</td><td><code>0.01</code></td><td>Discard segments where average speed falls below this value</td></tr>
+        <tr><td>Maximum Speed (km/h)</td><td><code>9</code></td><td>Discard segments where average speed exceeds this value (a sensible ceiling for elephants)</td></tr>
+      </tbody>
+    </table>
+
+    <h3 id="zoom-extent">Map Zoom &amp; Extent</h3>
+    <p>Calculates the geographic extent of the movement tracks and determines an appropriate zoom level and center point, ensuring all tracks are visible and well-framed.</p>
+    <table>
+      <thead><tr><th>Field</th><th>Default</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td>Expansion Factor</td><td><code>1.5</code></td><td>Factor to expand the bounding box around the tracks (e.g. <code>1.2</code> = 20% larger)</td></tr>
+      </tbody>
+    </table>
+
+    <h3 id="events">Retrieve All Events</h3>
+    <table>
+      <thead><tr><th>Field</th><th>Default</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td>Event Types</td><td><em>(empty)</em></td><td>Filter to specific EarthRanger event types (click <strong>Add</strong> to add entries; leave empty to include all event types)</td></tr>
+        <tr><td>Force Point Geometry</td><td><code>true</code></td><td>If enabled, polygon/multipolygon event geometries are reduced to their centroid; disable to preserve native geometry types</td></tr>
+      </tbody>
+    </table>
+
+    <h3 id="report-logo">Report Logo</h3>
+    <p>Optional &mdash; provide the logo image to appear on the report cover page. Leave blank to omit a logo.</p>
+    <table>
+      <thead><tr><th>Input Method</th><th>What to provide</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Download from URL</strong></td><td>Paste the direct download URL into the <strong>URL</strong> field</td></tr>
+        <tr><td><strong>Use local file</strong></td><td>Enter the absolute path to the logo file on the machine running the workflow</td></tr>
+      </tbody>
+    </table>
+
+    <h3 id="raster-maps">Raster Maps</h3>
+    <p>Configures how the mean speed raster is generated from movement trajectories.</p>
+    <table>
+      <thead><tr><th>Field</th><th>Default</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td>Step Length / Grid Size (m)</td><td><code>2000</code></td><td>Pixel size (in meters) used to generate the Recursion Events raster <strong>and</strong> the dry/wet season Mean Speed rasters &mdash; one value drives all three. Smaller values are more detailed but slower to generate and produce larger files</td></tr>
+      </tbody>
+    </table>
+
+    <h2 id="run">3. Run the Workflow</h2>
+    <p>Once all parameters are configured, click <strong>Submit</strong>. The runner will:</p>
+    <ol>
+      <li>Pull subject GPS observations (current and previous period) from EarthRanger.</li>
+      <li>Process relocations and apply the trajectory segment filter to both periods.</li>
+      <li>Query Google Earth Engine to determine NDVI-derived wet and dry seasonal windows; label each trajectory segment accordingly.</li>
+      <li>Load and style the selected Map Overlay layer (LandDx protected areas by default).</li>
+      <li>Generate the Movement Tracks Map (current + previous overlay) and the Subject Tracks Map.</li>
+      <li>Fetch EarthRanger events and generate the Elephant Sightings map.</li>
+      <li>Compute Elliptical Time Density home ranges: overall, filtered 99th percentile, protected/unprotected split, and per-subject seasonal.</li>
+      <li>Generate the Recursion Events raster and dry/wet season Mean Speed rasters.</li>
+      <li>Compute the Day/Night Dominance grid and Night Fixes grid.</li>
+      <li>Render the Protection Status bar chart.</li>
+      <li>Assemble the Word report (cover page + general section) and the dashboard.</li>
+      <li>Save all outputs to the directory specified by <code>ECOSCOPE_WORKFLOWS_RESULTS</code>.</li>
+    </ol>
+
+    <h3 id="output-files">Output Files</h3>
+    <p>All outputs are written to <code>$ECOSCOPE_WORKFLOWS_RESULTS/</code>:</p>
+    <table>
+      <thead><tr><th>File</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td><code>relocations.geoparquet</code></td><td>Current period GPS fix locations with day/night labels</td></tr>
+        <tr><td><code>previous_period_relocations.geoparquet</code></td><td>Previous period GPS fix locations</td></tr>
+        <tr><td><code>trajectories.geoparquet</code></td><td>Current period trajectory segments with season labels</td></tr>
+        <tr><td><code>previous_period_trajectories.geoparquet</code></td><td>Previous period trajectory segments</td></tr>
+        <tr><td><code>homerange_etd.geoparquet</code></td><td>Overall ETD home range polygons (50&ndash;99.9th percentiles)</td></tr>
+        <tr><td><code>homerange_protected_etd.geoparquet</code></td><td>ETD home range for fixes inside protected areas</td></tr>
+        <tr><td><code>homerange_unprotected_etd.geoparquet</code></td><td>ETD home range for fixes outside protected areas</td></tr>
+        <tr><td><code>&lt;subject&gt;_seasonal_etd.geoparquet</code></td><td>Seasonal ETD per subject</td></tr>
+        <tr><td><code>seasonal_windows.csv</code></td><td>NDVI-derived wet/dry season date ranges</td></tr>
+        <tr><td><code>weighted_raster.*</code></td><td>Recursion events ecograph raster file</td></tr>
+        <tr><td><code>movement_tracks.html</code></td><td>Interactive movement tracks map (current + previous period)</td></tr>
+        <tr><td><code>subject_tracks.html</code></td><td>Interactive subject tracks map (coloured per individual)</td></tr>
+        <tr><td><code>collared_points.html</code></td><td>Interactive elephant sightings / collaring events map</td></tr>
+        <tr><td><code>overall_homerange.html</code></td><td>Interactive overall home range map</td></tr>
+        <tr><td><code>filtered_homerange.html</code></td><td>Interactive 99th percentile home range map</td></tr>
+        <tr><td><code>protected_areas.html</code></td><td>Interactive protected areas home range map</td></tr>
+        <tr><td><code>unprotected_areas.html</code></td><td>Interactive unprotected areas home range map</td></tr>
+        <tr><td><code>&lt;subject&gt;_seasonal_homerange.html</code></td><td>Interactive seasonal home range map per subject</td></tr>
+        <tr><td><code>recursion_events.html</code></td><td>Interactive recursion events raster map</td></tr>
+        <tr><td><code>dry_mean_speed_raster_map.html</code></td><td>Interactive dry season mean speed raster map</td></tr>
+        <tr><td><code>wet_mean_speed_raster_map.html</code></td><td>Interactive wet season mean speed raster map</td></tr>
+        <tr><td><code>time_of_day_dominance.html</code></td><td>Interactive time of day dominance grid map</td></tr>
+        <tr><td><code>night_fixes.html</code></td><td>Interactive night fixes grid map</td></tr>
+        <tr><td><code>protection_status_bar.html</code></td><td>Interactive protection status bar chart</td></tr>
+        <tr><td><code>*.png</code> (per map above)</td><td>2&times; resolution screenshot of each interactive map/chart</td></tr>
+        <tr><td><code>general_cover_page.docx</code></td><td>Rendered report cover page (logo, subject count, report period)</td></tr>
+        <tr><td><code>overall_report.docx</code></td><td>Final combined Word report (cover page + general per-subject section)</td></tr>
+      </tbody>
+    </table>
+
+    <p>Something not working as expected? See <a href="troubleshooting.html">Troubleshooting</a>. For a deeper look at the pipeline internals, see the <a href="technical-guide.html">Technical Guide</a>.</p>
+  </main>
+
+  <footer class="site-footer">
+    <p>STE General Workflow &middot; <a href="https://github.com/wildlife-dynamics/ste-general">wildlife-dynamics/ste-general</a> on GitHub</p>
+  </footer>
+</body>
+</html>

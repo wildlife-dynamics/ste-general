@@ -133,7 +133,7 @@ def build():
         sp(8),
         hr(),
         p("Elephant Movement Ecology — Methodology &amp; Calculation Reference", META),
-        p(f"Version 1.0  ·  Generated {date.today().strftime('%B %d, %Y')}", META),
+        p(f"Version 1.1  ·  Generated {date.today().strftime('%B %d, %Y')}", META),
         hr(),
         PageBreak(),
     ]
@@ -223,14 +223,23 @@ def build():
             "entire group. Only seasonal home range maps are fanned out per subject."
         ),
 
-        sp(4), h2("2.4 landDx Geodatabase"),
+        sp(4), h2("2.4 Map Overlay &amp; landDx Geodatabase"),
         p(
-            "All maps share a common set of protected-area boundary polygons from the "
-            "<b>landDx</b> geodatabase (<code>landDx.gpkg</code>, layer "
-            "<code>landDx_polygons</code>). By default the file is downloaded from a "
-            "Dropbox URL; users may also supply a local path. "
-            "After loading, the database is filtered to three land-use types and only "
-            "three columns are retained (<code>type</code>, <code>name</code>, <code>geometry</code>)."
+            "The <b>Map Overlay</b> step (<code>select_map_overlay</code>) selects the "
+            "protected-area layer shared by every map, and doubles as the basis for the "
+            "protected/unprotected split (Section 4.6) and the Protection Status bar "
+            "chart (Section 5). Only protected-area-style layers are supported. Three "
+            "sources are available:"
+        ),
+        bullet("<b>LandDx (default)</b> — the standard protected-area GeoPackage, downloaded and styled automatically; no input required."),
+        bullet("<b>EarthRanger Spatial Feature</b> — fetches one or more named feature sets from the connected EarthRanger instance."),
+        bullet("<b>Custom Local File</b> — one or more local GeoJSON / GeoPackage / GeoParquet files, each becoming its own styled layer."),
+        p(
+            "When <b>LandDx</b> is selected, the geodatabase (<code>landDx.gpkg</code>, "
+            "layer <code>landDx_polygons</code>) is downloaded from a Dropbox URL by "
+            "default (a local path may be supplied instead), then filtered to three "
+            "land-use types with only three columns retained "
+            "(<code>type</code>, <code>name</code>, <code>geometry</code>)."
         ),
         make_table(
             [
@@ -249,16 +258,21 @@ def build():
         ),
 
         sp(4), h2("2.5 Base Map Tile Layers"),
-        p("Every map uses two stacked tile services:"),
+        p(
+            "Every map uses two stacked tile services, configured through the "
+            "<b>Configure basemap layers</b> step (<code>set_base_maps_pydeck</code>). "
+            "The URL, opacity, and max zoom of each layer are pre-filled with the "
+            "defaults below but are user-editable:"
+        ),
         make_table(
             [
                 ["Layer", "URL (abbreviated)", "Opacity", "Max zoom"],
                 ["ESRI World Hillshade",
                  "arcgisonline.com/…/World_Hillshade/…/{z}/{y}/{x}",
-                 "1.0", "20"],
+                 "0.995", "20"],
                 ["ESRI World Boundaries &amp; Places",
                  "arcgisonline.com/…/World_Boundaries_and_Places_Alternate/…/{z}/{y}/{x}",
-                 "0.25", "20"],
+                 "0.35", "20"],
             ],
             [4.5*cm, 7*cm, 2*cm, 2.5*cm],
         ),
@@ -317,8 +331,8 @@ def build():
                 ["max_length_meters", "5 000",    "m",     "Remove implausible long jumps"],
                 ["min_time_secs",     "1",        "s",     "Remove zero-duration segments"],
                 ["max_time_secs",     "21 600",   "s",     "Remove gaps > 6 h (fix dropout)"],
-                ["min_speed_knots",   "0.01",     "knots", "Remove near-stationary fixes"],
-                ["max_speed_knots",   "9",        "knots", "Remove biologically impossible speeds for elephants"],
+                ["min_speed_kmhr",    "0.01",     "km/h",  "Remove near-stationary fixes"],
+                ["max_speed_kmhr",    "9",        "km/h",  "Remove biologically impossible speeds for elephants"],
             ],
             [4*cm, 2.2*cm, 1.8*cm, 8.5*cm],
         ),
@@ -582,7 +596,7 @@ def build():
         make_table(
             [
                 ["Parameter",          "Value",     "Effect"],
-                ["step_length",        "2 000 m",   "Trajectories resampled to 2 km steps before aggregation"],
+                ["step_length",        "User-set via Raster maps → Step Length / Grid Size (default 2 000 m)", "Trajectories are resampled to this step length before aggregation"],
                 ["movement_covariate", "null",       "No speed metric — the count of revisits (network weight) is aggregated"],
                 ["interpolation",      "mean",       "Cell values averaged across contributing steps"],
                 ["network_metric",     "weight",     "Ecograph network edge weight — proportional to revisit frequency"],
@@ -591,7 +605,13 @@ def build():
                 ["tortuosity_length",  "3",          "Path sinuosity computed over 3-step windows"],
                 ["filename",           "weighted_raster", "Output raster filename prefix"],
             ],
-            [3.8*cm, 2.8*cm, 10*cm],
+            [3.8*cm, 5*cm, 7.8*cm],
+        ),
+        note(
+            "The <b>Step Length / Grid Size</b> field in the <b>Raster maps</b> step of "
+            "the workflow form sets a single grid size shared by this Recursion Events "
+            "raster <i>and</i> both the Dry and Wet Season Mean Speed rasters (Sections "
+            "4.9–4.10) — it is not fixed per raster."
         ),
         h3("Classification and colouring"),
         p(
@@ -630,13 +650,13 @@ def build():
         make_table(
             [
                 ["Parameter",          "Value",   "Effect"],
-                ["step_length",        "500 m",   "Finer resampling than recursion raster — captures local speed variation"],
+                ["step_length",        "Shared with Recursion Events raster (default 2 000 m, user-set)", "Trajectories resampled to this step length before aggregation"],
                 ["movement_covariate", "speed",   "Metric being aggregated is speed (km/h)"],
                 ["interpolation",      "mean",    "Per-cell values are mean speed across contributing steps"],
                 ["radius",             "2",       "Neighbourhood smoothing over 2-ring radius"],
                 ["network_metric",     "null",    "No network metric — pure speed raster"],
             ],
-            [4*cm, 2.5*cm, 10*cm],
+            [4*cm, 5.5*cm, 7*cm],
         ),
         h3("Post-processing"),
         p(
@@ -843,18 +863,19 @@ def build():
 
         sp(4), h2("8.3 Previous Period Logic"),
         p(
-            "The previous period is determined by <code>determine_previous_period</code>. "
-            "Predefined options:"
+            "The previous period is determined by <code>flexible_previous_period</code>. "
+            "In every mode, the comparison period's <b>end date</b> is fixed to the "
+            "current time range's start date (so the two periods never overlap) — only "
+            "the start date calculation differs. There are three modes:"
         ),
         make_table(
             [
-                ["Option",              "Behaviour"],
-                ["Same as current period", "Shifts the current period backwards by its own duration (default)"],
-                ["Previous month",      "Calendar month immediately before the current period"],
-                ["Previous year",       "One calendar year before the current period start"],
-                ["Custom range",        "User supplies an explicit start date; duration matches current period"],
+                ["Mode",     "Behaviour"],
+                ["Preset",   "Choose a common lookback — Same as current period, 1 month back, 3 months back, 6 months back, or 1 year back (default: 1 month back)"],
+                ["Calendar", "Manually pick the exact start date for the comparison period"],
+                ["Custom",   "Enter a Years / Months / Weeks / Days offset to count backward from the current time range's start date (default: 1 month back)"],
             ],
-            [5*cm, 11.5*cm],
+            [4*cm, 12.5*cm],
         ),
 
         sp(4), h2("8.4 mapvalues Fan-out (Seasonal Home Range)"),
@@ -876,20 +897,32 @@ def build():
     # ── 9. Software Versions ──────────────────────────────────────────────────
     story += [
         sp(4), h1("9. Software Versions"), hr(),
+        p(
+            "As of the migration to the <b>ecoscope-platform</b> task/compiler runtime, "
+            "the workflow's requirements are:"
+        ),
         make_table(
             [
-                ["Package",                         "Version",   "Role"],
-                ["ecoscope-workflows-core",         "0.22.17.*", "Core task library and workflow engine"],
-                ["ecoscope-workflows-ext-ecoscope", "0.22.17.*", "Ecoscope spatial analysis tasks (ETD, relocations, ecograph)"],
-                ["ecoscope-workflows-ext-custom",   "0.0.39.*",  "Custom STE utility tasks (protection status, template context)"],
-                ["ecoscope-workflows-ext-big-life",  "0.0.8.*",  "Big Life Foundation domain tasks"],
-                ["ecoscope-workflows-ext-ste",      "0.0.18.*",  "STE-specific tasks (seasonal analysis, day/night, recursion)"],
+                ["Package",                       "Version",              "Role"],
+                ["ecoscope-platform",              ">=2.15.0, &lt;2.16.0", "Core task library and workflow engine (replaces ecoscope-workflows-core / -ext-ecoscope / -ext-big-life)"],
+                ["ecoscope-workflows-ext-custom",  "0.1.0rc14.*",          "Custom STE utility tasks (protection status, template context)"],
+                ["ecoscope-workflows-ext-ste",     "0.0.0rc1.*",           "STE-specific tasks (seasonal analysis, day/night, recursion)"],
+                ["pydeck",                         "0.9.2",                "Renders the interactive DeckGL maps"],
+                ["opentelemetry-sdk",              ">=1.20.0, &lt;2.0.0",  "Workflow run telemetry/observability instrumentation"],
             ],
-            [5.5*cm, 2.8*cm, 8.2*cm],
+            [5.5*cm, 4*cm, 7*cm],
+        ),
+        note(
+            "<code>ecoscope-workflows-ext-ecoscope</code> and "
+            "<code>ecoscope-workflows-ext-big-life</code> are no longer direct "
+            "dependencies — their task coverage now lives in <code>ecoscope-platform</code>."
         ),
         p(
-            "Packages are distributed via the <code>prefix.dev</code> conda channel "
-            "and pinned to patch-compatible versions (<code>.*</code> suffix). "
+            "<code>ecoscope-platform</code> is pulled from the "
+            "<code>ecoscope-workflows</code> prefix.dev channel; the two "
+            "<code>ecoscope-workflows-ext-*</code> packages from the "
+            "<code>ecoscope-workflows-custom</code> channel; <code>pydeck</code> and "
+            "<code>opentelemetry-sdk</code> from <code>conda-forge</code>. "
             "The runtime environment is managed by <b>pixi</b>."
         ),
     ]

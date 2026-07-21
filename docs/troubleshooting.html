@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Troubleshooting — STE General Workflow</title>
+  <link rel="stylesheet" href="assets/style.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="bar">
+      <a class="brand" href="index.html">STE General Workflow</a>
+      <nav>
+        <a href="index.html">Overview</a>
+        <a href="user-guide.html">User Guide</a>
+        <a href="technical-guide.html">Technical Guide</a>
+        <a href="troubleshooting.html" class="active">Troubleshooting</a>
+        <a href="https://github.com/wildlife-dynamics/ste-general">GitHub</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <h1>Troubleshooting</h1>
+    <p class="lede">Common issues encountered while configuring, running, or contributing to the STE General Workflow, and how to resolve them. If your issue isn't listed here, open an issue on <a href="https://github.com/wildlife-dynamics/ste-general/issues">GitHub</a>.</p>
+
+    <h2>Configuration &amp; Connections</h2>
+
+    <div class="error-block">
+      <p class="symptom">Subject Group returns no data / "no subjects found"</p>
+      <p>The <strong>Subject Group Name</strong> field is case-sensitive and must match the name in EarthRanger exactly (see <a href="user-guide.html#subject-group">Subject Group</a>). Double-check capitalization and spacing &mdash; e.g. <code>elephants</code> will not match a group named <code>Elephants</code>.</p>
+    </div>
+
+    <div class="error-block">
+      <p class="symptom">EarthRanger connection fails or times out</p>
+      <p>Verify the server URL, username, and password configured in the EarthRanger connection (see <a href="user-guide.html#connections">Data Source Connections</a>). Confirm you can log into that same EarthRanger instance directly in a browser with the same credentials. Credentials aren't validated at setup time, so an invalid password only surfaces as an error once the workflow actually runs.</p>
+    </div>
+
+    <div class="error-block">
+      <p class="symptom">Google Earth Engine connection fails, or seasonal maps are missing</p>
+      <p>Confirm the service account private key (JSON) is valid and that the service account has been granted access to Earth Engine &mdash; see the <a href="https://developers.google.com/earth-engine/guides/service_account">Setup Guide</a>. Seasonal Home Range, Dry/Wet Season Mean Speed rasters, and the Seasonal Windows CSV all depend on this connection; if NDVI retrieval fails, those outputs are skipped rather than failing the whole run.</p>
+    </div>
+
+    <div class="error-block">
+      <p class="symptom">Map Overlay / landDx doesn't load, or Protected/Unprotected maps are empty</p>
+      <p>By default the <code>landDx</code> geodatabase is downloaded from a Dropbox URL at runtime (see <a href="user-guide.html#map-overlay">Map Overlay</a>). If it's unreachable, switch to <strong>Custom Local File</strong> and point to a local GeoJSON/GeoPackage/GeoParquet file, or <strong>EarthRanger Spatial Feature</strong> if your protected areas are maintained there instead. Since this overlay also drives the Protected/Unprotected Home Range maps and the Protection Status Bar Chart, a failed or empty overlay will leave those outputs empty too.</p>
+    </div>
+
+    <div class="error-block">
+      <p class="symptom">Basemap tiles don't load, or the background map is blank</p>
+      <p>The <a href="user-guide.html#basemap">Basemap Layers</a> URLs are user-editable. If you changed either the ESRI World Hillshade or World Boundaries &amp; Places layer away from its default, confirm the new tile URL follows the standard <code>{z}/{y}/{x}</code> template and is reachable from the machine running the workflow.</p>
+    </div>
+
+    <div class="error-block">
+      <p class="symptom">Elephant Sightings / Collaring Events map is empty</p>
+      <p>Check the <a href="user-guide.html#events">Retrieve All Events</a> settings &mdash; an <strong>Event Types</strong> filter that doesn't match any events in EarthRanger for the analysis period will return nothing. Leave it empty to include all event types. Also note that only events with point geometry are included by default; if your events use polygon geometry, keep <strong>Force Point Geometry</strong> enabled so they're reduced to a centroid instead of being dropped.</p>
+    </div>
+
+    <div class="error-block">
+      <p class="symptom">Report logo doesn't appear on the cover page</p>
+      <p>Check that the logo URL is a direct link to a PNG or JPG (not an HTML page), or that the local file path is reachable from the machine running the workflow. See <a href="user-guide.html#report-logo">Report Logo</a>.</p>
+    </div>
+
+    <h2>Trajectories &amp; Map Outputs</h2>
+
+    <div class="error-block">
+      <p class="symptom">Movement Tracks / Subject Tracks / Home Range maps are empty or sparse</p>
+      <p>This is usually the <a href="user-guide.html#trajectory-filter">Trajectory Segment Filter</a> discarding most of the data. If the subject group moves unusually slowly or quickly, or has irregular fix intervals, the default Min/Max Speed and Min/Max Segment Duration thresholds may filter out nearly all segments. Loosen the bounds to match the study species' actual movement characteristics, then re-run.</p>
+    </div>
+
+    <div class="error-block">
+      <p class="symptom">Previous-period comparison is missing or looks wrong on the Movement Tracks map</p>
+      <p>Check the <a href="user-guide.html#previous-period">Previous Period</a> mode &mdash; <strong>Preset</strong> defaults to "1 month back" but also offers "Same as current period" and other fixed lookbacks that use calendar boundaries rather than a rolling window. If you need a specific comparison window, use <strong>Calendar</strong> to pick an exact start date, or <strong>Custom</strong> to enter your own Years/Months/Weeks/Days offset.</p>
+    </div>
+
+    <div class="error-block">
+      <p class="symptom">Recursion Events raster and Mean Speed rasters are all too coarse or too slow to generate</p>
+      <p>All three rasters (Recursion Events, Dry Season Mean Speed, Wet Season Mean Speed) share one <a href="user-guide.html#raster-maps">Step Length / Grid Size</a> value &mdash; there is no way to set a finer grid for one without affecting the others. Lowering it below the default 2000&nbsp;m makes all three more detailed but slower to generate and larger in file size.</p>
+    </div>
+
+    <div class="error-block">
+      <p class="symptom">Seasonal Home Range or Seasonal Mean Speed rasters are missing for some subjects</p>
+      <p>These outputs depend on NDVI-derived <strong>wet/dry season windows</strong> from Google Earth Engine (see <code>seasonal_windows.csv</code> in the output directory). If GEE returns no usable NDVI signal for the analysis period or region, season labelling can't proceed and season-dependent outputs are skipped for the affected subjects.</p>
+    </div>
+
+    <div class="error-block">
+      <p class="symptom">Protection Status Bar Chart is empty or looks wrong</p>
+      <p>This chart is derived from the same protected/unprotected classification as the Protected and Unprotected Home Range maps, based on the selected <a href="user-guide.html#map-overlay">Map Overlay</a>. If the overlay layer doesn't cover your study area, every fix will be classified the same way (typically "Unprotected"), skewing or emptying the chart.</p>
+    </div>
+
+    <div class="error-block">
+      <p class="symptom">No outputs written / can't find results</p>
+      <p>All outputs are written to the directory specified by the <code>ECOSCOPE_WORKFLOWS_RESULTS</code> environment variable. Confirm it's set and points to a directory the workflow process can write to.</p>
+    </div>
+
+    <h2>Contributing &amp; CI</h2>
+    <p>These apply if you're modifying the workflow itself (<code>spec.yaml</code>, <code>test-cases.yaml</code>, or the generated <code>ecoscope-workflows-ste-general-workflow/</code> directory) and opening a pull request.</p>
+
+    <div class="error-block">
+      <p class="symptom"><code>Generated files differ from committed files in ecoscope-workflows-ste-general-workflow</code></p>
+      <p>The generated workflow directory is out of sync with <code>spec.yaml</code>. Run the recompile script locally and commit the result:</p>
+      <pre><code>pixi run --manifest-path pixi.toml --locked bash -c "./dev/recompile.sh --update"</code></pre>
+    </div>
+
+    <div class="error-block">
+      <p class="symptom"><code>Found wildcard version (*) in requirements</code> or <code>Found local file channel (file://) in requirements</code></p>
+      <p>In <code>spec.yaml</code>, every dependency under <code>requirements</code> must pin an exact version and use a remote conda channel &mdash; wildcard versions and local <code>file://</code> channels are only valid for local development, not for CI using published packages.</p>
+    </div>
+
+    <div class="error-block">
+      <p class="symptom"><code>VERSION.yaml (...) must be greater than main branch (...)</code></p>
+      <p>Bump <code>MAJ</code>/<code>MIN</code>/<code>PATCH</code> in <code>ecoscope-workflows-ste-general-workflow/VERSION.yaml</code> so it's strictly greater than the version on <code>main</code> before opening or updating a PR.</p>
+    </div>
+
+    <div class="error-block">
+      <p class="symptom"><code>test-cases.yaml must contain at least one test case</code></p>
+      <p>Every workflow requires at least one top-level entry in <code>test-cases.yaml</code> with a <code>params</code> block. See the existing entries in that file for the expected format.</p>
+    </div>
+
+    <div class="error-block">
+      <p class="symptom">Workflow tests fail in CI but pass locally (or vice versa)</p>
+      <p><code>test.yml</code> runs test cases against all of <code>ubuntu-latest</code>, <code>macos-latest</code>, and <code>windows-latest</code>, and relies on the EarthRanger and Earth Engine secrets being available to the workflow run. If a test only fails on CI, check whether it depends on a secret or on OS-specific path handling.</p>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <p>STE General Workflow &middot; <a href="https://github.com/wildlife-dynamics/ste-general">wildlife-dynamics/ste-general</a> on GitHub</p>
+  </footer>
+</body>
+</html>
