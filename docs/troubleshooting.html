@@ -42,6 +42,11 @@
     </div>
 
     <div class="error-block">
+      <p class="symptom"><code>Task instance 'determine_seasonal_windows' raised EEException('User memory limit exceeded.')</code></p>
+      <p>Google Earth Engine ran out of memory computing the NDVI phenology curve for seasonal window detection. This almost always happens when the <a href="user-guide.html#time-range">Analysis Time Range</a> (Since/Until) is too short &mdash; there isn't enough NDVI history for GEE to resolve wet/dry season windows in a single synchronous computation. Widen the analysis period to at least two to three months and re-run; a longer range gives Earth Engine more history to work with and avoids the memory ceiling.</p>
+    </div>
+
+    <div class="error-block">
       <p class="symptom">Map Overlay / landDx doesn't load, or Protected/Unprotected maps are empty</p>
       <p>By default the <code>landDx</code> geodatabase is downloaded from a Dropbox URL at runtime (see <a href="user-guide.html#map-overlay">Map Overlay</a>). If it's unreachable, switch to <strong>Custom Local File</strong> and point to a local GeoJSON/GeoPackage/GeoParquet file, or <strong>EarthRanger Spatial Feature</strong> if your protected areas are maintained there instead. Since this overlay also drives the Protected/Unprotected Home Range maps and the Protection Status Bar Chart, a failed or empty overlay will leave those outputs empty too.</p>
     </div>

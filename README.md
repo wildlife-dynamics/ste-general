@@ -111,6 +111,8 @@ The **Configure basemap layers** step sets the two stacked background tile layer
 
 All subject tracks, home ranges, and activity maps are computed within this window.
 
+> **Note:** Very short analysis periods (a few days or weeks) can cause the seasonal window detection step to fail with a Google Earth Engine `User memory limit exceeded` error. If you hit this, widen the **Since**/**Until** range — a window of two to three months or more gives Earth Engine enough NDVI history to compute season windows reliably.
+
 ### Previous Period Range
 
 This period drives the "Previous tracks" layer on the Movement Tracks Map, enabling direct before-and-after comparison alongside the current period tracks. Every mode computes a comparison period that ends on your time range's Start Date, then works backward to determine its own Start Date.
@@ -126,6 +128,7 @@ This period drives the "Previous tracks" layer on the Movement Tracks Map, enabl
 | Field | Default | Description |
 |-------|---------|-------------|
 | Subject Group Name | `Elephants` | Name of the subject group to pull from EarthRanger (case-sensitive) |
+| Include Subject Additional *(advanced)* | `false` | Whether to include the subject's free-form `additional` JSON metadata from EarthRanger. Applied to both the current and previous period observation fetches |
 
 ### Map Overlay
 

@@ -104,6 +104,7 @@
       </tbody>
     </table>
     <p>All subject tracks, home ranges, and activity maps are computed within this window.</p>
+    <p class="note">Very short analysis periods (a few days or weeks) can cause the seasonal window detection step to fail with a Google Earth Engine <code>User memory limit exceeded</code> error. If you hit this, widen the Since/Until range &mdash; a window of two to three months or more gives Earth Engine enough NDVI history to compute season windows reliably. See <a href="troubleshooting.html">Troubleshooting</a>.</p>
 
     <h3 id="previous-period">Previous Period Range</h3>
     <p>This period drives the "Previous tracks" layer on the Movement Tracks Map, enabling direct before-and-after comparison alongside the current period tracks. Every mode computes a comparison period that ends on your time range's Start Date, then works backward to determine its own Start Date.</p>
@@ -121,6 +122,7 @@
       <thead><tr><th>Field</th><th>Default</th><th>Description</th></tr></thead>
       <tbody>
         <tr><td>Subject Group Name</td><td><code>Elephants</code></td><td>Name of the subject group to pull from EarthRanger (case-sensitive)</td></tr>
+        <tr><td>Include Subject Additional <em>(advanced)</em></td><td><code>false</code></td><td>Whether to include the subject's free-form <code>additional</code> JSON metadata from EarthRanger. Applied to both the current and previous period observation fetches</td></tr>
       </tbody>
     </table>
 
