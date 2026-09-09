@@ -124,7 +124,7 @@ workflow:
     id: er_client_name
     task: set_er_connection 
 
-  - name: Connect to Earth Engine 
+  - name: Connect to Google Earth Engine 
     id: gee_project_name
     task: set_gee_connection 
 
@@ -595,7 +595,7 @@ workflow:
       data: ${{ workflow.persist_movement_tracks_html.return }}
 
   # 2 Collaring Events 
-  - name: Retrieve all events 
+  - name: Collar Events 
     id: get_events_data
     task: get_events
     skipif:
@@ -988,7 +988,7 @@ workflow:
       data: ${{ workflow.persist_filtered_homerange_html.return }}
 
   # Raster maps 
-  - title: Raster maps 
+  - title: Mean Speed Raster
     type: task-group
     description: Configure how the mean speed raster is generated from movement trajectories.
     tasks:
@@ -2571,9 +2571,9 @@ workflow:
       retries: 2
 
   # Download Logo
-  - title: Report logo
+  - title: Word Document Cover Page Logo
     type: task-group
-    description: Optional. Download or fetch the logo to be used in the report cover page. Leave blank to omit a logo from the cover page.
+    description: Download or fetch the logo to be used in the report cover page.
     tasks:
       - name: null
         id: logo_path

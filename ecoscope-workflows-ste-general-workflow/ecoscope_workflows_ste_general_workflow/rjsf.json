@@ -88,7 +88,7 @@
         "data_source"
       ],
       "type": "object",
-      "title": "Connect to Earth Engine"
+      "title": "Connect to Google Earth Engine"
     },
     "Subject Group": {
       "type": "object",
@@ -279,9 +279,9 @@
         "event_types"
       ],
       "type": "object",
-      "title": "Retrieve all events"
+      "title": "Collar Events"
     },
-    "Raster maps": {
+    "Mean Speed Raster": {
       "type": "object",
       "description": "Configure how the mean speed raster is generated from movement trajectories.",
       "ecoscope:task_group": true,
@@ -290,10 +290,15 @@
           "additionalProperties": false,
           "properties": {
             "var": {
-              "type": "number",
-              "default": 2000,
-              "title": "Step Length / Grid Size (m)",
-              "description": "Pixel size (in meters) used to generate the Recursion Events raster and the dry/wet season Mean Speed rasters. Smaller values are more detailed but slower to generate and produce larger files."
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "number"
+                }
+              ],
+              "title": ""
             }
           },
           "required": [
@@ -304,9 +309,9 @@
         }
       }
     },
-    "Report logo": {
+    "Word Document Cover Page Logo": {
       "type": "object",
-      "description": "Optional. Download or fetch the logo to be used in the report cover page. Leave blank to omit a logo from the cover page.",
+      "description": "Download or fetch the logo to be used in the report cover page.",
       "ecoscope:task_group": true,
       "properties": {
         "logo_path": {
@@ -329,6 +334,20 @@
           "type": "object",
           "required": [],
           "title": ""
+        }
+      }
+    },
+    "Raster maps": {
+      "properties": {
+        "set_grid_value": {
+          "properties": {
+            "var": {
+              "type": "number",
+              "default": 2000,
+              "title": "Step Length / Grid Size (m)",
+              "description": "Pixel size (in meters) used to generate the Recursion Events raster and the dry/wet season Mean Speed rasters. Smaller values are more detailed but slower to generate and produce larger files."
+            }
+          }
         }
       }
     }
@@ -868,8 +887,8 @@
       "Trajectory Segment Filter",
       "Map Zoom & Extent",
       "get_events_data",
-      "Raster maps",
-      "Report logo"
+      "Mean Speed Raster",
+      "Word Document Cover Page Logo"
     ]
   },
   "additionalProperties": false
