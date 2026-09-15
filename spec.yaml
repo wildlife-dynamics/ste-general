@@ -47,11 +47,11 @@ rjsf-overrides:
     # Previous Period — clarify that the comparison period ends where the current time range begins
     Previous Period.properties.set_previous_period.properties.offset.description: "Choose how to calculate the comparison period's Start Date. In every mode, the comparison period ends on your selected time range's Start Date (so it never overlaps with the current period) — only the Start Date changes."
 
-    # Raster maps — the shared grid/step-length value renders as a redundant integer/number
+    # Mean Speed Raster — the shared grid/step-length value renders as a redundant integer/number
     # choice (set_numerical_var's `var` is typed Union[int, float], so RJSF shows two
     # "Option" branches for what is really one field) and has no default. Collapse it to a
     # single numeric field with the 2000 m default used elsewhere in the workflow.
-    Raster maps.properties.set_grid_value.properties.var:
+    Mean Speed Raster.properties.set_grid_value.properties.var:
       type: number
       default: 2000
       title: "Step Length / Grid Size (m)"

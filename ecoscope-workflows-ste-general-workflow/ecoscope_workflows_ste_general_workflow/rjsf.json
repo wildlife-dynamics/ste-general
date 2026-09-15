@@ -290,15 +290,10 @@
           "additionalProperties": false,
           "properties": {
             "var": {
-              "anyOf": [
-                {
-                  "type": "integer"
-                },
-                {
-                  "type": "number"
-                }
-              ],
-              "title": ""
+              "type": "number",
+              "default": 2000,
+              "title": "Step Length / Grid Size (m)",
+              "description": "Pixel size (in meters) used to generate the Recursion Events raster and the dry/wet season Mean Speed rasters. Smaller values are more detailed but slower to generate and produce larger files."
             }
           },
           "required": [
@@ -334,20 +329,6 @@
           "type": "object",
           "required": [],
           "title": ""
-        }
-      }
-    },
-    "Raster maps": {
-      "properties": {
-        "set_grid_value": {
-          "properties": {
-            "var": {
-              "type": "number",
-              "default": 2000,
-              "title": "Step Length / Grid Size (m)",
-              "description": "Pixel size (in meters) used to generate the Recursion Events raster and the dry/wet season Mean Speed rasters. Smaller values are more detailed but slower to generate and produce larger files."
-            }
-          }
         }
       }
     }
