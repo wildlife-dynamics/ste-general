@@ -102,7 +102,16 @@
               "title": "Subject Group Name",
               "type": "string",
               "default": "Elephants",
-              "description": "Enter the subject group name exactly as it appears in EarthRanger (case-sensitive)."
+              "description": "The EarthRanger subject group to report on, picked from the chosen data source's subject groups.",
+              "ecoscope:transform": [
+                {
+                  "transformer": "EarthRangerEnumResolver",
+                  "transformer_kws": {
+                    "type": "subject_group_name",
+                    "depends_on": "properties.er_client_name.properties.data_source.properties.name"
+                  }
+                }
+              ]
             }
           },
           "required": [
@@ -265,7 +274,16 @@
           },
           "title": "Event Types",
           "type": "array",
-          "description": "Specify the event type(s) to analyze (optional). Leave this section empty to analyze all event types."
+          "description": "Specify the event type(s) to analyze (optional). Leave this section empty to analyze all event types.",
+          "ecoscope:transform": [
+            {
+              "transformer": "EarthRangerEnumResolver",
+              "transformer_kws": {
+                "type": "event_type",
+                "depends_on": "properties.er_client_name.properties.data_source.properties.name"
+              }
+            }
+          ]
         },
         "force_point_geometry": {
           "default": true,

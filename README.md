@@ -127,7 +127,7 @@ This period drives the "Previous tracks" layer on the Movement Tracks Map, enabl
 
 | Field | Default | Description |
 |-------|---------|-------------|
-| Subject Group Name | `Elephants` | Name of the subject group to pull from EarthRanger (case-sensitive) |
+| Subject Group Name | `Elephants` | The subject group to pull from EarthRanger, picked from a drop-down of the subject groups on the chosen data source |
 | Include Subject Additional *(advanced)* | `false` | Whether to include the subject's free-form `additional` JSON metadata from EarthRanger. Applied to both the current and previous period observation fetches |
 
 ### Map Overlay
@@ -165,7 +165,7 @@ Calculates the geographic extent of the movement tracks and determines an approp
 
 | Field | Default | Description |
 |-------|---------|-------------|
-| Event Types | *(empty)* | Filter to specific EarthRanger event types (click **Add** to add entries; leave empty to include all event types) |
+| Event Types | *(empty)* | Filter to specific EarthRanger event types, picked from a drop-down of the event types on the chosen data source (leave empty to include all event types) |
 | Force Point Geometry | `true` | If enabled, polygon/multipolygon event geometries are reduced to their centroid; disable to preserve native geometry types |
 
 ### Report Logo
