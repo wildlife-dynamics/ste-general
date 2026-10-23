@@ -36,10 +36,17 @@ from ecoscope.platform.tasks.preprocessing import (
 from ecoscope.platform.tasks.preprocessing import (
     relocations_to_trajectory as relocations_to_trajectory,
 )
+from ecoscope.platform.tasks.results import create_geojson_layer as create_geojson_layer
 from ecoscope.platform.tasks.results import (
     create_map_widget_single_view as create_map_widget_single_view,
 )
+from ecoscope.platform.tasks.results import create_path_layer as create_path_layer
+from ecoscope.platform.tasks.results import (
+    create_scatterplot_layer as create_scatterplot_layer,
+)
+from ecoscope.platform.tasks.results import draw_map as draw_map
 from ecoscope.platform.tasks.results import gather_dashboard as gather_dashboard
+from ecoscope.platform.tasks.results import set_base_maps as set_base_maps
 from ecoscope.platform.tasks.skip import (
     any_dependency_skipped as any_dependency_skipped,
 )
@@ -68,19 +75,6 @@ from ecoscope.platform.tasks.transformation import (
 )
 from ecoscope.platform.tasks.transformation import sort_values as sort_values
 from ecoscope_workflows_ext_custom.tasks.io import html_to_png as html_to_png
-from ecoscope_workflows_ext_custom.tasks.results import (
-    create_geojson_layer as create_geojson_layer_1,
-)
-from ecoscope_workflows_ext_custom.tasks.results import (
-    create_path_layer as create_path_layer_1,
-)
-from ecoscope_workflows_ext_custom.tasks.results import (
-    create_scatterplot_layer as create_scatterplot_layer_1,
-)
-from ecoscope_workflows_ext_custom.tasks.results import draw_map as draw_map_1
-from ecoscope_workflows_ext_custom.tasks.results import (
-    set_base_maps_pydeck as set_base_maps_pydeck,
-)
 from ecoscope_workflows_ext_custom.tasks.spatial_ops import (
     reproject_gdf as reproject_gdf,
 )
@@ -293,7 +287,7 @@ def main(params: dict[str, Any], validate_params_schema: bool = True):
     )
 
     configure_base_maps = (
-        task(set_base_maps_pydeck)
+        task(set_base_maps)
         .validate()
         .set_task_instance_id("configure_base_maps")
         .handle_errors()
@@ -705,6 +699,7 @@ def main(params: dict[str, Any], validate_params_schema: bool = True):
             unpack_depth=1,
         )
         .partial(
+            duplicate_strategy="suffix",
             raise_if_not_found=False,
             df=add_temporal_prev_index_to_traj,
             drop_columns=[],
@@ -764,6 +759,7 @@ def main(params: dict[str, Any], validate_params_schema: bool = True):
             unpack_depth=1,
         )
         .partial(
+            duplicate_strategy="suffix",
             raise_if_not_found=True,
             df=classify_trajectories_speed_bins,
             drop_columns=[],
@@ -1047,7 +1043,7 @@ def main(params: dict[str, Any], validate_params_schema: bool = True):
     )
 
     generate_track_layers = (
-        task(create_path_layer_1)
+        task(create_path_layer)
         .validate()
         .set_task_instance_id("generate_track_layers")
         .handle_errors()
@@ -1060,6 +1056,7 @@ def main(params: dict[str, Any], validate_params_schema: bool = True):
             unpack_depth=1,
         )
         .partial(
+            tooltip_columns=["duration_status", "subject_name"],
             data_url=None,
             layer_style={
                 "get_color": "duration_status_colors",
@@ -1149,7 +1146,7 @@ def main(params: dict[str, Any], validate_params_schema: bool = True):
     )
 
     draw_movement_tracks = (
-        task(draw_map_1)
+        task(draw_map)
         .validate()
         .set_task_instance_id("draw_movement_tracks")
         .handle_errors()
@@ -1162,6 +1159,7 @@ def main(params: dict[str, Any], validate_params_schema: bool = True):
             unpack_depth=1,
         )
         .partial(
+            output_type="html",
             tile_layers=configure_base_maps,
             static=False,
             title=None,
@@ -1257,7 +1255,7 @@ def main(params: dict[str, Any], validate_params_schema: bool = True):
     )
 
     generate_collaring_layers = (
-        task(create_scatterplot_layer_1)
+        task(create_scatterplot_layer)
         .validate()
         .set_task_instance_id("generate_collaring_layers")
         .handle_errors()
@@ -1270,6 +1268,7 @@ def main(params: dict[str, Any], validate_params_schema: bool = True):
             unpack_depth=1,
         )
         .partial(
+            tooltip_columns=None,
             data_url=None,
             layer_style={
                 "get_fill_color": [85, 107, 47],
@@ -1311,7 +1310,7 @@ def main(params: dict[str, Any], validate_params_schema: bool = True):
     )
 
     draw_collar_events = (
-        task(draw_map_1)
+        task(draw_map)
         .validate()
         .set_task_instance_id("draw_collar_events")
         .handle_errors()
@@ -1324,6 +1323,7 @@ def main(params: dict[str, Any], validate_params_schema: bool = True):
             unpack_depth=1,
         )
         .partial(
+            output_type="html",
             tile_layers=configure_base_maps,
             static=False,
             title=None,
@@ -1403,7 +1403,7 @@ def main(params: dict[str, Any], validate_params_schema: bool = True):
     )
 
     generate_subject_track_layers = (
-        task(create_path_layer_1)
+        task(create_path_layer)
         .validate()
         .set_task_instance_id("generate_subject_track_layers")
         .handle_errors()
@@ -1416,6 +1416,7 @@ def main(params: dict[str, Any], validate_params_schema: bool = True):
             unpack_depth=1,
         )
         .partial(
+            tooltip_columns=None,
             data_url=None,
             layer_style={
                 "get_color": "subject_colors",
@@ -1465,7 +1466,7 @@ def main(params: dict[str, Any], validate_params_schema: bool = True):
     )
 
     draw_subject_tracks = (
-        task(draw_map_1)
+        task(draw_map)
         .validate()
         .set_task_instance_id("draw_subject_tracks")
         .handle_errors()
@@ -1478,6 +1479,7 @@ def main(params: dict[str, Any], validate_params_schema: bool = True):
             unpack_depth=1,
         )
         .partial(
+            output_type="html",
             tile_layers=configure_base_maps,
             static=False,
             title=None,
@@ -1699,7 +1701,7 @@ def main(params: dict[str, Any], validate_params_schema: bool = True):
     )
 
     generate_home_range_layers = (
-        task(create_geojson_layer_1)
+        task(create_geojson_layer)
         .validate()
         .set_task_instance_id("generate_home_range_layers")
         .handle_errors()
@@ -1712,6 +1714,7 @@ def main(params: dict[str, Any], validate_params_schema: bool = True):
             unpack_depth=1,
         )
         .partial(
+            tooltip_columns=["percentile", "area_sqkm"],
             data_url=None,
             layer_style={
                 "filled": True,
@@ -1764,7 +1767,7 @@ def main(params: dict[str, Any], validate_params_schema: bool = True):
     )
 
     draw_home_range_map = (
-        task(draw_map_1)
+        task(draw_map)
         .validate()
         .set_task_instance_id("draw_home_range_map")
         .handle_errors()
@@ -1777,6 +1780,7 @@ def main(params: dict[str, Any], validate_params_schema: bool = True):
             unpack_depth=1,
         )
         .partial(
+            output_type="html",
             tile_layers=configure_base_maps,
             static=False,
             title=None,
@@ -1858,7 +1862,7 @@ def main(params: dict[str, Any], validate_params_schema: bool = True):
     )
 
     custom_home_range_layers = (
-        task(create_geojson_layer_1)
+        task(create_geojson_layer)
         .validate()
         .set_task_instance_id("custom_home_range_layers")
         .handle_errors()
@@ -1871,6 +1875,7 @@ def main(params: dict[str, Any], validate_params_schema: bool = True):
             unpack_depth=1,
         )
         .partial(
+            tooltip_columns=None,
             data_url=None,
             layer_style={
                 "filled": True,
@@ -1920,7 +1925,7 @@ def main(params: dict[str, Any], validate_params_schema: bool = True):
     )
 
     draw_filtered_hr_map = (
-        task(draw_map_1)
+        task(draw_map)
         .validate()
         .set_task_instance_id("draw_filtered_hr_map")
         .handle_errors()
@@ -1933,6 +1938,7 @@ def main(params: dict[str, Any], validate_params_schema: bool = True):
             unpack_depth=1,
         )
         .partial(
+            output_type="html",
             tile_layers=configure_base_maps,
             static=False,
             title=None,
@@ -2172,7 +2178,7 @@ def main(params: dict[str, Any], validate_params_schema: bool = True):
     )
 
     create_weighted_raster_layer = (
-        task(create_geojson_layer_1)
+        task(create_geojson_layer)
         .validate()
         .set_task_instance_id("create_weighted_raster_layer")
         .handle_errors()
@@ -2185,6 +2191,7 @@ def main(params: dict[str, Any], validate_params_schema: bool = True):
             unpack_depth=1,
         )
         .partial(
+            tooltip_columns=["value_bins"],
             data_url=None,
             layer_style={
                 "filled": True,
@@ -2237,7 +2244,7 @@ def main(params: dict[str, Any], validate_params_schema: bool = True):
     )
 
     draw_weight_raster_map = (
-        task(draw_map_1)
+        task(draw_map)
         .validate()
         .set_task_instance_id("draw_weight_raster_map")
         .handle_errors()
@@ -2250,6 +2257,7 @@ def main(params: dict[str, Any], validate_params_schema: bool = True):
             unpack_depth=1,
         )
         .partial(
+            output_type="html",
             tile_layers=configure_base_maps,
             static=False,
             title=None,
@@ -2521,7 +2529,7 @@ def main(params: dict[str, Any], validate_params_schema: bool = True):
     )
 
     create_wet_raster_layer = (
-        task(create_geojson_layer_1)
+        task(create_geojson_layer)
         .validate()
         .set_task_instance_id("create_wet_raster_layer")
         .handle_errors()
@@ -2534,6 +2542,7 @@ def main(params: dict[str, Any], validate_params_schema: bool = True):
             unpack_depth=1,
         )
         .partial(
+            tooltip_columns=["bins_formatted", "value_bins"],
             data_url=None,
             layer_style={
                 "filled": True,
@@ -2586,7 +2595,7 @@ def main(params: dict[str, Any], validate_params_schema: bool = True):
     )
 
     draw_wet_map = (
-        task(draw_map_1)
+        task(draw_map)
         .validate()
         .set_task_instance_id("draw_wet_map")
         .handle_errors()
@@ -2599,6 +2608,7 @@ def main(params: dict[str, Any], validate_params_schema: bool = True):
             unpack_depth=1,
         )
         .partial(
+            output_type="html",
             tile_layers=configure_base_maps,
             static=False,
             title=None,
@@ -2870,7 +2880,7 @@ def main(params: dict[str, Any], validate_params_schema: bool = True):
     )
 
     create_dry_raster_layer = (
-        task(create_geojson_layer_1)
+        task(create_geojson_layer)
         .validate()
         .set_task_instance_id("create_dry_raster_layer")
         .handle_errors()
@@ -2883,6 +2893,7 @@ def main(params: dict[str, Any], validate_params_schema: bool = True):
             unpack_depth=1,
         )
         .partial(
+            tooltip_columns=["bins_formatted", "value_bins"],
             data_url=None,
             layer_style={
                 "filled": True,
@@ -2935,7 +2946,7 @@ def main(params: dict[str, Any], validate_params_schema: bool = True):
     )
 
     draw_dry_map = (
-        task(draw_map_1)
+        task(draw_map)
         .validate()
         .set_task_instance_id("draw_dry_map")
         .handle_errors()
@@ -2948,6 +2959,7 @@ def main(params: dict[str, Any], validate_params_schema: bool = True):
             unpack_depth=1,
         )
         .partial(
+            output_type="html",
             tile_layers=configure_base_maps,
             static=False,
             title=None,
@@ -3204,7 +3216,7 @@ def main(params: dict[str, Any], validate_params_schema: bool = True):
     )
 
     dn_layer = (
-        task(create_geojson_layer_1)
+        task(create_geojson_layer)
         .validate()
         .set_task_instance_id("dn_layer")
         .handle_errors()
@@ -3217,6 +3229,7 @@ def main(params: dict[str, Any], validate_params_schema: bool = True):
             unpack_depth=1,
         )
         .partial(
+            tooltip_columns=None,
             data_url=None,
             layer_style={
                 "filled": True,
@@ -3269,7 +3282,7 @@ def main(params: dict[str, Any], validate_params_schema: bool = True):
     )
 
     draw_dn_map = (
-        task(draw_map_1)
+        task(draw_map)
         .validate()
         .set_task_instance_id("draw_dn_map")
         .handle_errors()
@@ -3282,6 +3295,7 @@ def main(params: dict[str, Any], validate_params_schema: bool = True):
             unpack_depth=1,
         )
         .partial(
+            output_type="html",
             tile_layers=configure_base_maps,
             static=False,
             title=None,
@@ -3478,7 +3492,7 @@ def main(params: dict[str, Any], validate_params_schema: bool = True):
     )
 
     threshold_layer = (
-        task(create_geojson_layer_1)
+        task(create_geojson_layer)
         .validate()
         .set_task_instance_id("threshold_layer")
         .handle_errors()
@@ -3491,6 +3505,7 @@ def main(params: dict[str, Any], validate_params_schema: bool = True):
             unpack_depth=1,
         )
         .partial(
+            tooltip_columns=None,
             data_url=None,
             layer_style={
                 "filled": True,
@@ -3543,7 +3558,7 @@ def main(params: dict[str, Any], validate_params_schema: bool = True):
     )
 
     draw_threshold_map = (
-        task(draw_map_1)
+        task(draw_map)
         .validate()
         .set_task_instance_id("draw_threshold_map")
         .handle_errors()
@@ -3556,6 +3571,7 @@ def main(params: dict[str, Any], validate_params_schema: bool = True):
             unpack_depth=1,
         )
         .partial(
+            output_type="html",
             tile_layers=configure_base_maps,
             static=False,
             title=None,
@@ -3843,7 +3859,7 @@ def main(params: dict[str, Any], validate_params_schema: bool = True):
     )
 
     generate_protected_layers = (
-        task(create_geojson_layer_1)
+        task(create_geojson_layer)
         .validate()
         .set_task_instance_id("generate_protected_layers")
         .handle_errors()
@@ -3856,6 +3872,7 @@ def main(params: dict[str, Any], validate_params_schema: bool = True):
             unpack_depth=1,
         )
         .partial(
+            tooltip_columns=["etd_percentile_colors", "percentile", "area_sqkm"],
             data_url=None,
             layer_style={
                 "filled": True,
@@ -3908,7 +3925,7 @@ def main(params: dict[str, Any], validate_params_schema: bool = True):
     )
 
     draw_protected_map = (
-        task(draw_map_1)
+        task(draw_map)
         .validate()
         .set_task_instance_id("draw_protected_map")
         .handle_errors()
@@ -3921,6 +3938,7 @@ def main(params: dict[str, Any], validate_params_schema: bool = True):
             unpack_depth=1,
         )
         .partial(
+            output_type="html",
             tile_layers=configure_base_maps,
             static=False,
             title=None,
@@ -4119,7 +4137,7 @@ def main(params: dict[str, Any], validate_params_schema: bool = True):
     )
 
     generate_unprotected_layers = (
-        task(create_geojson_layer_1)
+        task(create_geojson_layer)
         .validate()
         .set_task_instance_id("generate_unprotected_layers")
         .handle_errors()
@@ -4132,6 +4150,7 @@ def main(params: dict[str, Any], validate_params_schema: bool = True):
             unpack_depth=1,
         )
         .partial(
+            tooltip_columns=["etd_percentile_colors", "percentile", "area_sqkm"],
             data_url=None,
             layer_style={
                 "filled": True,
@@ -4184,7 +4203,7 @@ def main(params: dict[str, Any], validate_params_schema: bool = True):
     )
 
     draw_unprotected_map = (
-        task(draw_map_1)
+        task(draw_map)
         .validate()
         .set_task_instance_id("draw_unprotected_map")
         .handle_errors()
@@ -4197,6 +4216,7 @@ def main(params: dict[str, Any], validate_params_schema: bool = True):
             unpack_depth=1,
         )
         .partial(
+            output_type="html",
             tile_layers=configure_base_maps,
             static=False,
             title=None,
@@ -4567,7 +4587,7 @@ def main(params: dict[str, Any], validate_params_schema: bool = True):
     )
 
     generate_season_layers = (
-        task(create_geojson_layer_1)
+        task(create_geojson_layer)
         .validate()
         .set_task_instance_id("generate_season_layers")
         .handle_errors()
@@ -4580,6 +4600,7 @@ def main(params: dict[str, Any], validate_params_schema: bool = True):
             unpack_depth=1,
         )
         .partial(
+            tooltip_columns=["season_colors", "season"],
             data_url=None,
             layer_style={
                 "filled": True,
@@ -4689,7 +4710,7 @@ def main(params: dict[str, Any], validate_params_schema: bool = True):
     )
 
     draw_seasonal_home_range_map = (
-        task(draw_map_1)
+        task(draw_map)
         .validate()
         .set_task_instance_id("draw_seasonal_home_range_map")
         .handle_errors()
@@ -4702,6 +4723,7 @@ def main(params: dict[str, Any], validate_params_schema: bool = True):
             unpack_depth=1,
         )
         .partial(
+            output_type="html",
             tile_layers=configure_base_maps,
             static=False,
             title=None,

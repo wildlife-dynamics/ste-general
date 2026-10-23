@@ -230,6 +230,35 @@
           "type": "array",
           "description": "Specify the event type(s) to analyze (optional). Leave this section empty to analyze all event types."
         },
+        "event_states": {
+          "default": null,
+          "items": {
+            "type": "string",
+            "oneOf": [
+              {
+                "const": "new",
+                "title": "New"
+              },
+              {
+                "const": "active",
+                "title": "Active"
+              },
+              {
+                "const": "resolved",
+                "title": "Resolved"
+              },
+              {
+                "const": "review",
+                "title": "Review"
+              }
+            ]
+          },
+          "title": "Event State",
+          "type": "array",
+          "description": "Choose to analyze events with a certain state. If left empty, events of all states will be analyzed",
+          "uniqueItems": true,
+          "ecoscope:advanced": true
+        },
         "force_point_geometry": {
           "default": true,
           "title": "Force Point Geometry",
@@ -796,6 +825,7 @@
     "get_events_data": {
       "ui:order": [
         "event_types",
+        "event_states",
         "force_point_geometry"
       ]
     },
