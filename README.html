@@ -146,7 +146,7 @@
 </tbody>
 </table>
 <h3 id="basemap-layers">Basemap Layers</h3>
-<p>The <strong>Configure basemap layers</strong> step sets the two stacked background tile layers shared by all maps. Pre-filled with sensible defaults, but the URL, opacity, and max zoom of each layer are editable.</p>
+<p>All maps share two stacked ArcGIS background tile layers. These are fixed in the workflow (<strong>Configure basemap layers</strong>) and don't appear on the configuration form.</p>
 <table>
 <thead>
 <tr class="header">
@@ -208,7 +208,7 @@
 <tbody>
 <tr class="odd">
 <td><strong>Preset</strong></td>
-<td><code>1 month back</code></td>
+<td><code>Same as current period</code></td>
 <td>A common lookback: <code>Same as current period</code>, <code>1 month back</code>, <code>3 months back</code>, <code>6 months back</code>, or <code>1 year back</code></td>
 </tr>
 <tr class="even">
@@ -223,6 +223,7 @@
 </tr>
 </tbody>
 </table>
+<p>The default is <strong>Preset → Same as current period</strong>: a comparison period of the same length as your time range, ending on its start date. For example, a 1 Jul – 30 Sep time range is compared with 1 Apr – 1 Jul.</p>
 <h3 id="subject-group">Subject Group</h3>
 <table>
 <thead>
@@ -237,11 +238,6 @@
 <td>Subject Group Name</td>
 <td><code>Elephants</code></td>
 <td>The subject group to pull from EarthRanger, picked from a drop-down of the subject groups on the chosen data source</td>
-</tr>
-<tr class="even">
-<td>Include Subject Additional <em>(advanced)</em></td>
-<td><code>false</code></td>
-<td>Whether to include the subject's free-form <code>additional</code> JSON metadata from EarthRanger. Applied to both the current and previous period observation fetches</td>
 </tr>
 </tbody>
 </table>
@@ -583,6 +579,47 @@
 </tr>
 </tbody>
 </table>
+<h3 id="map-tooltips">Map Tooltips</h3>
+<p>Hover over a track, contour or cell on an interactive map (in the dashboard or the saved <code>.html</code> files) to see its values:</p>
+<table>
+<thead>
+<tr class="header">
+<th>Map</th>
+<th>Tooltip shows</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Movement Tracks</td>
+<td>Period (<code>Current tracks</code> / <code>Previous tracks</code>) and subject name</td>
+</tr>
+<tr class="even">
+<td>Overall Home Range</td>
+<td>Percentile contour and its area (km²)</td>
+</tr>
+<tr class="odd">
+<td>Protected / Unprotected Areas Home Range</td>
+<td>Percentile contour, its colour, and its area (km²)</td>
+</tr>
+<tr class="even">
+<td>Seasonal Home Range</td>
+<td>Season (wet / dry) and its colour</td>
+</tr>
+<tr class="odd">
+<td>Recursion Events Raster</td>
+<td>Value bin</td>
+</tr>
+<tr class="even">
+<td>Dry / Wet Season Mean Speed Raster</td>
+<td>Speed class label and value bin</td>
+</tr>
+<tr class="odd">
+<td>Subject Tracks, Collaring Events, Filtered (99th) Home Range, Time of Day Dominance, Night Fixes</td>
+<td>No tooltip</td>
+</tr>
+</tbody>
+</table>
+<p>Tooltips are only available on the interactive maps; the <code>.png</code> screenshots and the Word report are static.</p>
 <hr />
 <h2 id="more-help">More Help</h2>
 <ul>

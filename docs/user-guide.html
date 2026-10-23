@@ -85,7 +85,7 @@
     </table>
 
     <h3 id="basemap">Basemap Layers</h3>
-    <p>The <strong>Configure basemap layers</strong> step sets the two stacked background tile layers shared by all maps. Pre-filled with sensible defaults, but the URL, opacity, and max zoom of each layer are editable.</p>
+    <p>All maps share two stacked ArcGIS background tile layers. These are fixed in the workflow (<strong>Configure basemap layers</strong>) and don't appear on the configuration form.</p>
     <table>
       <thead><tr><th>Layer</th><th>Default Opacity</th><th>Max Zoom</th></tr></thead>
       <tbody>
@@ -111,18 +111,18 @@
     <table>
       <thead><tr><th>Offset Mode</th><th>Default</th><th>Description</th></tr></thead>
       <tbody>
-        <tr><td><strong>Preset</strong></td><td><code>1 month back</code></td><td>A common lookback: <code>Same as current period</code>, <code>1 month back</code>, <code>3 months back</code>, <code>6 months back</code>, or <code>1 year back</code></td></tr>
+        <tr><td><strong>Preset</strong></td><td><code>Same as current period</code></td><td>A common lookback: <code>Same as current period</code>, <code>1 month back</code>, <code>3 months back</code>, <code>6 months back</code>, or <code>1 year back</code></td></tr>
         <tr><td><strong>Calendar</strong></td><td>&mdash;</td><td>Pick an exact Start Date for the comparison period</td></tr>
         <tr><td><strong>Custom</strong></td><td>Years <code>0</code>, Months <code>1</code>, Weeks <code>0</code>, Days <code>0</code></td><td>Manually set how far back the comparison period's Start Date should be</td></tr>
       </tbody>
     </table>
+    <p>The default is <strong>Preset &rarr; Same as current period</strong>: a comparison period of the same length as your time range, ending on its start date. For example, a 1 Jul &ndash; 30 Sep time range is compared with 1 Apr &ndash; 1 Jul.</p>
 
     <h3 id="subject-group">Subject Group</h3>
     <table>
       <thead><tr><th>Field</th><th>Default</th><th>Description</th></tr></thead>
       <tbody>
         <tr><td>Subject Group Name</td><td><code>Elephants</code></td><td>The subject group to pull from EarthRanger, picked from a drop-down of the subject groups on the chosen data source</td></tr>
-        <tr><td>Include Subject Additional <em>(advanced)</em></td><td><code>false</code></td><td>Whether to include the subject's free-form <code>additional</code> JSON metadata from EarthRanger. Applied to both the current and previous period observation fetches</td></tr>
       </tbody>
     </table>
 
@@ -239,6 +239,22 @@
         <tr><td><code>overall_report.docx</code></td><td>Final combined Word report (cover page + general per-subject section)</td></tr>
       </tbody>
     </table>
+
+    <h3 id="map-tooltips">Map Tooltips</h3>
+    <p>Hover over a track, contour or cell on an interactive map (in the dashboard or the saved <code>.html</code> files) to see its values:</p>
+    <table>
+      <thead><tr><th>Map</th><th>Tooltip shows</th></tr></thead>
+      <tbody>
+        <tr><td>Movement Tracks</td><td>Period (<code>Current tracks</code> / <code>Previous tracks</code>) and subject name</td></tr>
+        <tr><td>Overall Home Range</td><td>Percentile contour and its area (km²)</td></tr>
+        <tr><td>Protected / Unprotected Areas Home Range</td><td>Percentile contour, its colour, and its area (km²)</td></tr>
+        <tr><td>Seasonal Home Range</td><td>Season (wet / dry) and its colour</td></tr>
+        <tr><td>Recursion Events Raster</td><td>Value bin</td></tr>
+        <tr><td>Dry / Wet Season Mean Speed Raster</td><td>Speed class label and value bin</td></tr>
+        <tr><td>Subject Tracks, Collaring Events, Filtered (99th) Home Range, Time of Day Dominance, Night Fixes</td><td>No tooltip</td></tr>
+      </tbody>
+    </table>
+    <p>Tooltips are only available on the interactive maps; the <code>.png</code> screenshots and the Word report are static.</p>
 
     <p>Something not working as expected? See <a href="troubleshooting.html">Troubleshooting</a>. For a deeper look at the pipeline internals, see the <a href="technical-guide.html">Technical Guide</a>.</p>
   </main>

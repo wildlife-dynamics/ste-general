@@ -133,7 +133,7 @@ def build():
         sp(8),
         hr(),
         p("Elephant Movement Ecology — Methodology &amp; Calculation Reference", META),
-        p(f"Version 1.2  ·  Generated {date.today().strftime('%B %d, %Y')}", META),
+        p(f"Version 1.3  ·  Generated {date.today().strftime('%B %d, %Y')}", META),
         hr(),
         PageBreak(),
     ]
@@ -211,9 +211,10 @@ def build():
 
         sp(4), h2("2.3 Subject Group"),
         p(
-            "The user specifies a <b>Subject Group Name</b> (default: <code>Elephants</code>) "
-            "that must match exactly — case-sensitively — a subject group in the connected "
-            "EarthRanger instance. All subjects within that group are fetched for the "
+            "The user picks a <b>Subject Group Name</b> (default: <code>Elephants</code>) "
+            "from a drop-down of the subject groups on the chosen EarthRanger data source, "
+            "filled by the <code>EarthRangerEnumResolver</code> form transformer once a data "
+            "source is selected. All subjects within that group are fetched for the "
             "configured time range. The grouper is fixed to <code>subject_name</code>, "
             "so outputs are produced at the group level (not per individual)."
         ),
@@ -223,11 +224,9 @@ def build():
             "entire group. Only seasonal home range maps are fanned out per subject."
         ),
         p(
-            "An advanced <b>Include Subject Additional</b> toggle (default: disabled) is "
-            "exposed on both the current-period and previous-period observation fetch "
-            "tasks. When enabled, each subject's free-form <code>additional</code> JSON "
-            "field from EarthRanger is retained in the fetched observations rather than "
-            "discarded."
+            "Both observation fetches set <code>include_subject_additional: false</code>, "
+            "so each subject's free-form <code>additional</code> JSON field is not "
+            "retained. This is fixed in the spec and no longer exposed on the form."
         ),
 
         sp(4), h2("2.4 Map Overlay &amp; landDx Geodatabase"),
@@ -267,9 +266,9 @@ def build():
         sp(4), h2("2.5 Base Map Tile Layers"),
         p(
             "Every map uses two stacked tile services, configured through the "
-            "<b>Configure basemap layers</b> step (<code>set_base_maps_pydeck</code>). "
-            "The URL, opacity, and max zoom of each layer are pre-filled with the "
-            "defaults below but are user-editable:"
+            "<b>Configure basemap layers</b> step (the platform's <code>set_base_maps</code> "
+            "task). The layers are set in the task's <code>partial</code>, so they don't "
+            "appear on the form; change them in <code>spec.yaml</code> and recompile:"
         ),
         make_table(
             [
@@ -395,7 +394,8 @@ def build():
 
         sp(4), h2("3.7 Previous Period"),
         p(
-            "The previous period is determined by <code>determine_previous_period</code>. "
+            "The previous period is determined by <code>flexible_previous_period</code> "
+            "(Section 8.3). "
             "The same trajectory segment filter is applied to the previous period "
             "trajectories. A <code>duration_status</code> column is appended — "
             "<code>'Previous tracks'</code> — before merging with current period "
@@ -475,7 +475,9 @@ def build():
         p(
             "<code>get_events</code> fetches EarthRanger events for the analysis "
             "period. Events include collaring records and elephant sightings logged "
-            "in the field. Only events with a point geometry are included "
+            "in the field. The optional <b>Event Types</b> filter is a drop-down of the "
+            "event types on the chosen data source (<code>EarthRangerEnumResolver</code>). "
+            "Only events with a point geometry are included "
             "(<code>include_null_geometry: false</code>)."
         ),
         p("Columns retained per event:"),
@@ -749,6 +751,41 @@ def build():
         ),
     ]
 
+    # 4.13 Map Rendering & Tooltips
+    story += [
+        sp(4), h2("4.13 Map Rendering &amp; Tooltips"),
+        p(
+            "All 13 maps are drawn with the built-in <b>ecoscope-platform</b> map tasks "
+            "rather than the earlier copies in <code>ecoscope-workflows-ext-custom</code>: "
+            "<code>create_path_layer</code> (Movement Tracks, Subject Tracks), "
+            "<code>create_scatterplot_layer</code> (Collaring Events), "
+            "<code>create_geojson_layer</code> (all home range and raster/grid maps), and "
+            "<code>draw_map</code> with <code>output_type: html</code>. Layer and legend "
+            "styling is unchanged."
+        ),
+        p("Each layer's <code>tooltip_columns</code> sets what hovering shows:"),
+        make_table(
+            [
+                ["Layer",                          "Tooltip columns"],
+                ["Movement tracks",                "duration_status, subject_name"],
+                ["Overall home range",             "percentile, area_sqkm"],
+                ["Protected / unprotected home range", "etd_percentile_colors, percentile, area_sqkm"],
+                ["Seasonal home range",            "season_colors, season"],
+                ["Recursion events raster",        "value_bins"],
+                ["Dry / wet mean speed raster",    "bins_formatted, value_bins"],
+                ["Subject tracks, collaring events, filtered 99th home range, time of day dominance, night fixes",
+                 "none (tooltip_columns: null)"],
+            ],
+            [7*cm, 9.5*cm],
+        ),
+        note(
+            "<code>etd_percentile_colors</code> and <code>season_colors</code> hold the "
+            "colour each feature is drawn with, so those tooltips show a raw colour value. "
+            "Tooltips exist only on the HTML maps; the PNG screenshots and the Word report "
+            "are static."
+        ),
+    ]
+
     # ── 5. Protection Status Analysis ─────────────────────────────────────────
     story += [
         sp(4), h1("5. Protection Status Analysis"), hr(),
@@ -885,11 +922,19 @@ def build():
         make_table(
             [
                 ["Mode",     "Behaviour"],
-                ["Preset",   "Choose a common lookback — Same as current period, 1 month back, 3 months back, 6 months back, or 1 year back (default: 1 month back)"],
+                ["Preset",   "Choose a common lookback — Same as current period, 1 month back, 3 months back, 6 months back, or 1 year back (default: Same as current period)"],
                 ["Calendar", "Manually pick the exact start date for the comparison period"],
                 ["Custom",   "Enter a Years / Months / Weeks / Days offset to count backward from the current time range's start date (default: 1 month back)"],
             ],
             [4*cm, 12.5*cm],
+        ),
+        p(
+            "Default is the <b>Preset</b> mode with <b>Same as current period</b> "
+            "selected (set in the spec's form overrides). It subtracts the length of the "
+            "current time range from its start date, giving a comparison period of equal "
+            "length immediately before it — e.g. a 1 Jul – 30 Sep range is compared with "
+            "1 Apr – 1 Jul. The fixed presets subtract a calendar offset "
+            "(<code>relativedelta</code>) from the start date instead."
         ),
 
         sp(4), h2("8.4 mapvalues Fan-out (Seasonal Home Range)"),
@@ -899,7 +944,7 @@ def build():
             "task in the chain (<code>calculate_seasonal_home_range</code>, "
             "<code>convert_to_str</code>, <code>assign_season_colors</code>, "
             "<code>reproject_gdf</code>, <code>filter_df_cols</code>, "
-            "<code>create_geojson_layer</code>, <code>view_state_deck_gdf</code>, "
+            "<code>create_geojson_layer</code>, <code>envelope_gdf</code> / <code>compute_view_state_from_gdf</code>, "
             "<code>draw_map</code>, <code>html_to_png</code>) receives the "
             "<code>argvalues</code> list from its upstream task, processing one "
             "subject per invocation. <code>zip_groupbykey</code> aligns the "
@@ -918,9 +963,9 @@ def build():
         make_table(
             [
                 ["Package",                       "Version",              "Role"],
-                ["ecoscope-platform",              "2.18.0",               "Core task library and workflow engine (replaces ecoscope-workflows-core / -ext-ecoscope / -ext-big-life)"],
-                ["ecoscope-workflows-ext-custom",  "0.1.0rc14.*",          "Custom STE utility tasks (protection status, template context)"],
-                ["ecoscope-workflows-ext-ste",     "0.0.0rc1.*",           "STE-specific tasks (seasonal analysis, day/night, recursion)"],
+                ["ecoscope-platform",              "==2.25.3",             "Core task library and workflow engine, including the map layer, draw_map and set_base_maps tasks (replaces ecoscope-workflows-core / -ext-ecoscope / -ext-big-life)"],
+                ["ecoscope-workflows-ext-custom",  "0.1.4.*",              "Custom STE utility tasks (protection status, template context)"],
+                ["ecoscope-workflows-ext-ste",     "0.0.24.*",             "STE-specific tasks (seasonal analysis, day/night, recursion, previous period, view state)"],
                 ["pydeck",                         "0.9.2",                "Renders the interactive DeckGL maps"],
                 ["opentelemetry-sdk",              ">=1.20.0, &lt;2.0.0",  "Workflow run telemetry/observability instrumentation"],
             ],

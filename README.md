@@ -94,7 +94,7 @@ Once both connections exist, select them from the **Connect to earth ranger** an
 
 ### Basemap Layers
 
-The **Configure basemap layers** step sets the two stacked background tile layers shared by all maps. Pre-filled with sensible defaults, but the URL, opacity, and max zoom of each layer are editable.
+All maps share two stacked ArcGIS background tile layers. These are fixed in the workflow (**Configure basemap layers**) and don't appear on the configuration form.
 
 | Layer | Default Opacity | Max Zoom |
 |-------|------------------|----------|
@@ -119,16 +119,17 @@ This period drives the "Previous tracks" layer on the Movement Tracks Map, enabl
 
 | Offset Mode | Default | Description |
 |-------------|---------|-------------|
-| **Preset** | `1 month back` | A common lookback: `Same as current period`, `1 month back`, `3 months back`, `6 months back`, or `1 year back` |
+| **Preset** | `Same as current period` | A common lookback: `Same as current period`, `1 month back`, `3 months back`, `6 months back`, or `1 year back` |
 | **Calendar** | — | Pick an exact Start Date for the comparison period |
 | **Custom** | Years `0`, Months `1`, Weeks `0`, Days `0` | Manually set how far back the comparison period's Start Date should be |
+
+The default is **Preset → Same as current period**: a comparison period of the same length as your time range, ending on its start date. For example, a 1 Jul – 30 Sep time range is compared with 1 Apr – 1 Jul.
 
 ### Subject Group
 
 | Field | Default | Description |
 |-------|---------|-------------|
 | Subject Group Name | `Elephants` | The subject group to pull from EarthRanger, picked from a drop-down of the subject groups on the chosen data source |
-| Include Subject Additional *(advanced)* | `false` | Whether to include the subject's free-form `additional` JSON metadata from EarthRanger. Applied to both the current and previous period observation fetches |
 
 ### Map Overlay
 
@@ -250,6 +251,22 @@ All outputs are written to `$ECOSCOPE_WORKFLOWS_RESULTS/`:
 | `protection_status_bar.png` | Screenshot of protection status bar chart (2× resolution) |
 | `general_cover_page.docx` | Rendered report cover page (logo, subject count, report period) |
 | `overall_report.docx` | Final combined Word report (cover page + general per-subject section) |
+
+### Map Tooltips
+
+Hover over a track, contour or cell on an interactive map (in the dashboard or the saved `.html` files) to see its values:
+
+| Map | Tooltip shows |
+|-----|---------------|
+| Movement Tracks | Period (`Current tracks` / `Previous tracks`) and subject name |
+| Overall Home Range | Percentile contour and its area (km²) |
+| Protected / Unprotected Areas Home Range | Percentile contour, its colour, and its area (km²) |
+| Seasonal Home Range | Season (wet / dry) and its colour |
+| Recursion Events Raster | Value bin |
+| Dry / Wet Season Mean Speed Raster | Speed class label and value bin |
+| Subject Tracks, Collaring Events, Filtered (99th) Home Range, Time of Day Dominance, Night Fixes | No tooltip |
+
+Tooltips are only available on the interactive maps; the `.png` screenshots and the Word report are static.
 
 ---
 
